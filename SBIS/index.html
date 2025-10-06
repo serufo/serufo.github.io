@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avatar SBIS </title>
+    <title>Avatar SBIS</title>
     <style>
         * {
             margin: 0;
@@ -165,7 +165,7 @@
         </header>
         
         <div class="avatar-container">
-            <div class="avatar-wrapper">
+            <div class="avatar-wrapper" id="avatar-wrapper">
                 <!-- O iframe será inserido aqui pelo script -->
             </div>
             
@@ -196,92 +196,77 @@
     </footer>
 
     <script>
-        // Script original do Heygen formatado
+        // Script modificado para exibir o avatar como quadrado dentro da área
         !function(window) {
             const host = "https://labs.heygen.com";
             const url = host + "/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJBbm5fRG9jdG9yX1N0YW5kaW5nMl9wdWJs%0D%0AaWMiLCJwcmV2aWV3SW1nIjoiaHR0cHM6Ly9maWxlczIuaGV5Z2VuLmFpL2F2YXRhci92My82OTlh%0D%0ANGMyOTk1OTE0ZDM5YjJjYjMxMWE5MzBkNzcyMF80NTU3MC9wcmV2aWV3X3RhbGtfMy53ZWJwIiwi%0D%0AbmVlZFJlbW92ZUJhY2tncm91bmQiOmZhbHNlLCJrbm93bGVkZ2VCYXNlSWQiOiI2NjNiNzk0NTQ4%0D%0ANTQ0MzgzYjVmZDcwYTRjMzQwMGRiOSIsInVzZXJuYW1lIjoiY2M5YTE0MTZkZWQzNGVlZWE4OGQz%0D%0AMDhlYmUyOGJjZTEifQ%3D%3D&inIFrame=1";
             
-            const clientWidth = document.body.clientWidth;
-            const wrapDiv = document.createElement("div");
-            wrapDiv.id = "heygen-streaming-embed";
-            
-            const container = document.createElement("div");
-            container.id = "heygen-streaming-container";
-            
-            const stylesheet = document.createElement("style");
-            stylesheet.innerHTML = `
-                #heygen-streaming-embed {
-                    z-index: 9999;
-                    position: fixed;
-                    left: 40px;
-                    bottom: 40px;
-                    width: 200px;
-                    height: 200px;
-                    border-radius: 50%;
-                    border: 2px solid #fff;
-                    box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);
-                    transition: all linear 0.1s;
-                    overflow: hidden;
-                    opacity: 0;
-                    visibility: hidden;
-                }
-                
-                #heygen-streaming-embed.show {
-                    opacity: 1;
-                    visibility: visible;
-                }
-                
-                #heygen-streaming-embed.expand {
-                    ${clientWidth < 540 ? "height: 266px; width: 96%; left: 50%; transform: translateX(-50%);" : "height: 366px; width: calc(366px * 16 / 9);"}
-                    border: 0;
-                    border-radius: 8px;
-                }
-                
-                #heygen-streaming-container {
-                    width: 100%;
-                    height: 100%;
-                }
-                
-                #heygen-streaming-container iframe {
-                    width: 100%;
-                    height: 100%;
-                    border: 0;
-                }
-            `;
-            
+            // Criar o iframe diretamente na área designada
+            const avatarWrapper = document.getElementById('avatar-wrapper');
             const iframe = document.createElement("iframe");
             iframe.allowFullscreen = false;
             iframe.title = "Streaming Embed";
             iframe.role = "dialog";
             iframe.allow = "microphone";
             iframe.src = url;
+            iframe.style.width = "100%";
+            iframe.style.height = "100%";
+            iframe.style.border = "none";
             
-            let visible = false;
-            let initial = false;
+            // Adicionar o iframe diretamente ao wrapper
+            avatarWrapper.appendChild(iframe);
             
-            window.addEventListener("message", (e) => {
-                if (e.origin === host && e.data && e.data.type && e.data.type === "streaming-embed") {
-                    if (e.data.action === "init") {
-                        initial = true;
-                        wrapDiv.classList.toggle("show", initial);
-                    } else if (e.data.action === "show") {
-                        visible = true;
-                        wrapDiv.classList.toggle("expand", visible);
-                    } else if (e.data.action === "hide") {
-                        visible = false;
-                        wrapDiv.classList.toggle("expand", visible);
-                    }
-                }
-            });
+            // Criar o elemento flutuante para quando o avatar for minimizado
+            const floatingAvatar = document.createElement("div");
+            floatingAvatar.id = "heygen-floating-avatar";
+            floatingAvatar.style.cssText = `
+                z-index: 9999;
+                position: fixed;
+                left: 40px;
+                bottom: 40px;
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                border: 2px solid #fff;
+                box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);
+                transition: all linear 0.1s;
+                overflow: hidden;
+                opacity: 0;
+                visibility: hidden;
+                background: #000;
+            `;
             
-            container.appendChild(iframe);
-            wrapDiv.appendChild(stylesheet);
-            wrapDiv.appendChild(container);
-            document.body.appendChild(wrapDiv);
+            const floatingIframe = document.createElement("iframe");
+            floatingIframe.allowFullscreen = false;
+            floatingIframe.title = "Streaming Embed";
+            floatingIframe.role = "dialog";
+            floatingIframe.allow = "microphone";
+            floatingIframe.src = url;
+            floatingIframe.style.width = "100%";
+            floatingIframe.style.height = "100%";
+            floatingIframe.style.border = "none";
+            
+            floatingAvatar.appendChild(floatingIframe);
+            document.body.appendChild(floatingAvatar);
+            
+            let isAvatarVisible = true;
+            let isExpanded = false;
             
             // Controles personalizados
             document.getElementById('toggle-avatar').addEventListener('click', function() {
-                wrapDiv.classList.toggle('show');
+                isAvatarVisible = !isAvatarVisible;
+                
+                if (isAvatarVisible) {
+                    // Mostrar na área principal
+                    avatarWrapper.style.display = "block";
+                    floatingAvatar.style.opacity = "0";
+                    floatingAvatar.style.visibility = "hidden";
+                } else {
+                    // Mostrar como flutuante
+                    avatarWrapper.style.display = "none";
+                    floatingAvatar.style.opacity = "1";
+                    floatingAvatar.style.visibility = "visible";
+                }
             });
             
             document.getElementById('fullscreen-btn').addEventListener('click', function() {
@@ -295,6 +280,26 @@
                     }
                 }
             });
+            
+            // Permitir que o usuário clique no avatar flutuante para expandir
+            floatingAvatar.addEventListener('click', function() {
+                isExpanded = !isExpanded;
+                
+                if (isExpanded) {
+                    floatingAvatar.style.width = "400px";
+                    floatingAvatar.style.height = "400px";
+                    floatingAvatar.style.borderRadius = "8px";
+                } else {
+                    floatingAvatar.style.width = "200px";
+                    floatingAvatar.style.height = "200px";
+                    floatingAvatar.style.borderRadius = "50%";
+                }
+            });
+            
+            // Inicialmente, o avatar está visível na área principal
+            avatarWrapper.style.display = "block";
+            floatingAvatar.style.opacity = "0";
+            floatingAvatar.style.visibility = "hidden";
             
         }(globalThis);
     </script>

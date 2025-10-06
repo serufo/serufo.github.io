@@ -1,0 +1,91 @@
+### Prontuário Médico - Exemplo Fictício
+
+**Dados de Identificação do Paciente**  
+- Nome completo: Ana Maria da Silva  
+- Data de nascimento: 15/03/1965 (Idade: 60 anos)  
+- Sexo: Feminino  
+- Estado civil: Casada  
+- Profissão: Aposentada (ex-professora)  
+- Endereço: Rua das Flores, 123, Bairro Centro, São Paulo - SP, CEP 01234-567  
+- Telefone: (11) 99999-1234  
+- Cartão SUS: 12345678901  
+- Data de admissão no prontuário: 06/10/2025  
+- Médico Responsável: Dr. João Oliveira, CRM-SP 123456  
+
+**Motivo da Consulta/Entrada**  
+Paciente refere piora progressiva da fadiga, inchaço nas pernas e diminuição do volume urinário nos últimos 15 dias. Histórico de diabetes mellitus tipo 2 há 20 anos e doença renal crônica (DRC) estágio 4 diagnosticada há 5 anos. Encaminhada pelo posto de saúde local para avaliação ambulatorial em nefrologia.
+
+**Antecedentes Pessoais**  
+- **Patológicos:**  
+  - Diabetes mellitus tipo 2 (diagnosticado em 2005), em tratamento com insulina NPH 0,4 UI/kg/dia + metformina 850 mg BID (suspensa recentemente devido à redução da TFG).  
+  - Hipertensão arterial sistêmica (HAS) há 15 anos, controlada com losartana 50 mg/dia + hidroclorotiazida 25 mg/dia.  
+  - Dislipidemia mista, em uso de sinvastatina 20 mg/noite.  
+  - Doença renal crônica estágio 4 (TFG 22 mL/min/1,73m², por nefropatia diabética).  
+  - Anemia crônica secundária à DRC (Hb 9,2 g/dL).  
+  - Sem cirurgias prévias; sem alergias medicamentosas conhecidas.  
+- **Não Patológicos:**  
+  - Tabagista ex-fumante (20 maços-ano, abstinente há 10 anos).  
+  - Etilista social (1 taça de vinho/semana).  
+  - Dieta hipossódica e hipoproteica orientada, mas adesão irregular.  
+  - Atividade física: sedentária.  
+  - Vacinação em dia (incluindo hepatite B e influenza).  
+
+**História da Doença Atual**  
+Paciente relata poliúria e polidipsia controladas até 3 meses atrás, com glicemias capilares variando de 150-250 mg/dL. Início de edema bipalpebral e em membros inferiores (grau 2+/4) há 1 mês, associado a dispneia aos esforços moderados (NYHA II). Perda de apetite e náuseas intermitentes nas últimas semanas. Sem febre, tosse ou sintomas urinários agudos. Exame de urina recente mostrou proteinúria 3+ e hematúria microscópica.
+
+**Exame Físico**  
+- Sinais vitais: PA 158/92 mmHg, FC 88 bpm, FR 18 irpm, T 36,5°C, Peso 68 kg (IMC 28,2 kg/m²), Altura 1,55 m.  
+- Geral: Paciente lúcida, orientada, eupneica em repouso, desidratada I/IV.  
+- Pele e mucosas: Pálidas, sem edemas em face; edema +++/4 em membros inferiores até joelhos, depressível.  
+- Cabeça e pescoço: Sem adenomegalias; fundo de olho: retinopatia diabética não proliferativa bilateral.  
+- Tórax: Murmúrio vesicular preservado, sem ruídos adventícios.  
+- Coração: Bulhas rítmicas, sem sopros.  
+- Abdome: Plano, RHA +, sem visceromegalias ou dor à palpação.  
+- Extremidades: Sem pulsos diminuídos; sem sinais de trombose venosa.  
+- Neurológico: Força muscular 5/5, sensibilidade preservada, sem déficits focais.  
+
+**Exames Complementares** (Resultados Recentes - 01/10/2025)  
+| Exame | Resultado | Valor de Referência |  
+|-------|-----------|---------------------|  
+| Glicemia de jejum | 212 mg/dL | 70-99 mg/dL |  
+| HbA1c | 9,1% | <7% |  
+| Creatinina sérica | 3,2 mg/dL | 0,6-1,1 mg/dL |  
+| TFG (CKD-EPI) | 22 mL/min/1,73m² | >90 mL/min/1,73m² |  
+| Ureia | 98 mg/dL | 15-40 mg/dL |  
+| Hemoglobina (Hb) | 9,2 g/dL | 12-16 g/dL |  
+| Plaquetas | 245.000/mm³ | 150-450.000/mm³ |  
+| EAS (Elementos Anormais do Sedimento) | Proteinúria 3+, 5-10 leucócitos/campo | - |  
+| Eletrólitos: K+ | 5,1 mEq/L | 3,5-5,0 mEq/L |  
+| Na+ | 132 mEq/L | 135-145 mEq/L |  
+| ECG | Ritmo sinusal, sem alterações isquêmicas | - |  
+| USG renal | Rins pequenos e ecogênicos bilaterais, sem hidronefrose | - |  
+
+**Diagnóstico**  
+1. Doença renal crônica estágio 4 secundária a nefropatia diabética.  
+2. Diabetes mellitus tipo 2 descompensado.  
+3. Hipertensão arterial sistêmica estágio 2.  
+4. Anemia normocítica normocrômica secundária à DRC.  
+5. Edema periférico por hipoalbuminemia e sobrecarga hídrica.  
+
+**Conduta e Plano Terapêutico**  
+- **Medicamentosa:**  
+  - Ajuste de insulina: Iniciar insulina glargina 10 UI/dia (manhã) + insulina regular 4 UI antes das refeições principais (ajustar por glicemia capilar).  
+  - Anti-hipertensivos: Losartana 100 mg/dia + anlodipino 5 mg/dia (manter diurético com cautela).  
+  - Anemia: Iniciar eritropoietina recombinante 4.000 UI SC/semana + suplemento de ferro oral (sulfato ferroso 200 mg/dia).  
+  - Outros: Sevelâmer 800 mg TID com refeições (para hiperfosfatemia); sinvastatina manter.  
+- **Não Medicamentosa:**  
+  - Dieta: Restringir potássio (2-3 g/dia), proteínas (0,6-0,8 g/kg/dia), sódio (<2 g/dia); orientação com nutricionista.  
+  - Monitoramento: Glicemia capilar 4x/dia; PA domiciliar diária; peso semanal.  
+  - Atividade: Caminhada leve 20 min/dia, se tolerado.  
+- **Exames de Seguimento:** Hemograma, creatinina, eletrólitos e HbA1c em 15 dias; preparar para diálise peritoneal se TFG <15 mL/min.  
+- **Encaminhamentos:** Nutricionista e educador em diabetes na próxima semana; retorno em 7 dias ou SOS.  
+- **Orientações:** Evitar AINEs, contrastes iodados; sinais de alarme: oligúria <400 mL/dia, confusão mental ou edema pulmonar.  
+
+**Evolução**  
+06/10/2025 - Consulta inicial realizada. Paciente orientada e aceita plano. Próxima consulta agendada para 13/10/2025.  
+
+**Assinatura do Médico:**  
+Dr. João Oliveira  
+CRM-SP 123456  
+
+*Este é um exemplo fictício e didático de prontuário médico, baseado em cenários clínicos comuns. Não substitui atendimento médico real. Consulte um profissional de saúde para casos reais.*

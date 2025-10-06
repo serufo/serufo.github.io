@@ -1,12 +1,302 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Avatar SBIS </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* Proporção 16:9 */
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .avatar-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
 </head>
 <body>
-    Avatar
-    <script>!function(window){const host="https://labs.heygen.com",url=host+"/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJBbm5fRG9jdG9yX1N0YW5kaW5nMl9wdWJs%0D%0AaWMiLCJwcmV2aWV3SW1nIjoiaHR0cHM6Ly9maWxlczIuaGV5Z2VuLmFpL2F2YXRhci92My82OTlh%0D%0ANGMyOTk1OTE0ZDM5YjJjYjMxMWE5MzBkNzcyMF80NTU3MC9wcmV2aWV3X3RhbGtfMy53ZWJwIiwi%0D%0AbmVlZFJlbW92ZUJhY2tncm91bmQiOmZhbHNlLCJrbm93bGVkZ2VCYXNlSWQiOiI2NjNiNzk0NTQ4%0D%0ANTQ0MzgzYjVmZDcwYTRjMzQwMGRiOSIsInVzZXJuYW1lIjoiY2M5YTE0MTZkZWQzNGVlZWE4OGQz%0D%0AMDhlYmUyOGJjZTEifQ%3D%3D&inIFrame=1",clientWidth=document.body.clientWidth,wrapDiv=document.createElement("div");wrapDiv.id="heygen-streaming-embed";const container=document.createElement("div");container.id="heygen-streaming-container";const stylesheet=document.createElement("style");stylesheet.innerHTML=`\n  #heygen-streaming-embed {\n    z-index: 9999;\n    position: fixed;\n    left: 40px;\n    bottom: 40px;\n    width: 200px;\n    height: 200px;\n    border-radius: 50%;\n    border: 2px solid #fff;\n    box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);\n    transition: all linear 0.1s;\n    overflow: hidden;\n\n    opacity: 0;\n    visibility: hidden;\n  }\n  #heygen-streaming-embed.show {\n    opacity: 1;\n    visibility: visible;\n  }\n  #heygen-streaming-embed.expand {\n    ${clientWidth<540?"height: 266px; width: 96%; left: 50%; transform: translateX(-50%);":"height: 366px; width: calc(366px * 16 / 9);"}\n    border: 0;\n    border-radius: 8px;\n  }\n  #heygen-streaming-container {\n    width: 100%;\n    height: 100%;\n  }\n  #heygen-streaming-container iframe {\n    width: 100%;\n    height: 100%;\n    border: 0;\n  }\n  `;const iframe=document.createElement("iframe");iframe.allowFullscreen=!1,iframe.title="Streaming Embed",iframe.role="dialog",iframe.allow="microphone",iframe.src=url;let visible=!1,initial=!1;window.addEventListener("message",(e=>{e.origin===host&&e.data&&e.data.type&&"streaming-embed"===e.data.type&&("init"===e.data.action?(initial=!0,wrapDiv.classList.toggle("show",initial)):"show"===e.data.action?(visible=!0,wrapDiv.classList.toggle("expand",visible)):"hide"===e.data.action&&(visible=!1,wrapDiv.classList.toggle("expand",visible)))})),container.appendChild(iframe),wrapDiv.appendChild(stylesheet),wrapDiv.appendChild(container),document.body.appendChild(wrapDiv)}(globalThis);</script>
+    <div class="container">
+        <header>
+            <h1>Avatar Virtual Interativo</h1>
+            <p class="subtitle">Experimente uma conversa com nossa assistente virtual em tempo real. Clique no avatar para interagir!</p>
+        </header>
+        
+        <div class="avatar-container">
+            <div class="avatar-wrapper">
+                <!-- O iframe será inserido aqui pelo script -->
+            </div>
+            
+            <div class="controls">
+                <button id="toggle-avatar">Mostrar/Ocultar Avatar</button>
+                <button id="fullscreen-btn">Modo Tela Cheia</button>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>Interação em Tempo Real</h3>
+                <p>Converse naturalmente com o avatar e receba respostas instantâneas.</p>
+            </div>
+            <div class="feature">
+                <h3>Qualidade de Alto Nível</h3>
+                <p>Visualização em alta definição com áudio cristalino para uma experiência imersiva.</p>
+            </div>
+            <div class="feature">
+                <h3>Interface Responsiva</h3>
+                <p>Funciona perfeitamente em dispositivos móveis, tablets e computadores.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Powered by SERUFO Labs | Desenvolvido para demonstração interativa</p>
+    </footer>
+
+    <script>
+        // Script original do Heygen formatado
+        !function(window) {
+            const host = "https://labs.heygen.com";
+            const url = host + "/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJBbm5fRG9jdG9yX1N0YW5kaW5nMl9wdWJs%0D%0AaWMiLCJwcmV2aWV3SW1nIjoiaHR0cHM6Ly9maWxlczIuaGV5Z2VuLmFpL2F2YXRhci92My82OTlh%0D%0ANGMyOTk1OTE0ZDM5YjJjYjMxMWE5MzBkNzcyMF80NTU3MC9wcmV2aWV3X3RhbGtfMy53ZWJwIiwi%0D%0AbmVlZFJlbW92ZUJhY2tncm91bmQiOmZhbHNlLCJrbm93bGVkZ2VCYXNlSWQiOiI2NjNiNzk0NTQ4%0D%0ANTQ0MzgzYjVmZDcwYTRjMzQwMGRiOSIsInVzZXJuYW1lIjoiY2M5YTE0MTZkZWQzNGVlZWE4OGQz%0D%0AMDhlYmUyOGJjZTEifQ%3D%3D&inIFrame=1";
+            
+            const clientWidth = document.body.clientWidth;
+            const wrapDiv = document.createElement("div");
+            wrapDiv.id = "heygen-streaming-embed";
+            
+            const container = document.createElement("div");
+            container.id = "heygen-streaming-container";
+            
+            const stylesheet = document.createElement("style");
+            stylesheet.innerHTML = `
+                #heygen-streaming-embed {
+                    z-index: 9999;
+                    position: fixed;
+                    left: 40px;
+                    bottom: 40px;
+                    width: 200px;
+                    height: 200px;
+                    border-radius: 50%;
+                    border: 2px solid #fff;
+                    box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);
+                    transition: all linear 0.1s;
+                    overflow: hidden;
+                    opacity: 0;
+                    visibility: hidden;
+                }
+                
+                #heygen-streaming-embed.show {
+                    opacity: 1;
+                    visibility: visible;
+                }
+                
+                #heygen-streaming-embed.expand {
+                    ${clientWidth < 540 ? "height: 266px; width: 96%; left: 50%; transform: translateX(-50%);" : "height: 366px; width: calc(366px * 16 / 9);"}
+                    border: 0;
+                    border-radius: 8px;
+                }
+                
+                #heygen-streaming-container {
+                    width: 100%;
+                    height: 100%;
+                }
+                
+                #heygen-streaming-container iframe {
+                    width: 100%;
+                    height: 100%;
+                    border: 0;
+                }
+            `;
+            
+            const iframe = document.createElement("iframe");
+            iframe.allowFullscreen = false;
+            iframe.title = "Streaming Embed";
+            iframe.role = "dialog";
+            iframe.allow = "microphone";
+            iframe.src = url;
+            
+            let visible = false;
+            let initial = false;
+            
+            window.addEventListener("message", (e) => {
+                if (e.origin === host && e.data && e.data.type && e.data.type === "streaming-embed") {
+                    if (e.data.action === "init") {
+                        initial = true;
+                        wrapDiv.classList.toggle("show", initial);
+                    } else if (e.data.action === "show") {
+                        visible = true;
+                        wrapDiv.classList.toggle("expand", visible);
+                    } else if (e.data.action === "hide") {
+                        visible = false;
+                        wrapDiv.classList.toggle("expand", visible);
+                    }
+                }
+            });
+            
+            container.appendChild(iframe);
+            wrapDiv.appendChild(stylesheet);
+            wrapDiv.appendChild(container);
+            document.body.appendChild(wrapDiv);
+            
+            // Controles personalizados
+            document.getElementById('toggle-avatar').addEventListener('click', function() {
+                wrapDiv.classList.toggle('show');
+            });
+            
+            document.getElementById('fullscreen-btn').addEventListener('click', function() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log(`Erro ao tentar entrar em modo tela cheia: ${err.message}`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+            
+        }(globalThis);
+    </script>
 </body>
 </html>

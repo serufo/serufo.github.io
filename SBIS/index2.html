@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedAI - Solução Avançada em Gestão de Risco Clínico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #0d47a1;
+            --secondary: #34a853;
+            --accent: #fbbc05;
+            --danger: #ea4335;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        section {
+            padding: 80px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3, h4 {
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        h2:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(26, 115, 232, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            box-shadow: 0 4px 15px rgba(52, 168, 83, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: #2e8b47;
+            box-shadow: 0 6px 20px rgba(52, 168, 83, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            text-align: center;
+            padding: 120px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 10px;
+            min-width: 200px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+
+        .stat-text {
+            font-size: 1rem;
+        }
+
+        /* Problem Section */
+        .problem {
+            background: var(--light);
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .problem-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            border-top: 4px solid var(--danger);
+        }
+
+        .problem-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .problem-card i {
+            font-size: 2.5rem;
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
+        /* Solution Section */
+        .solution {
+            background: white;
+        }
+
+        .solution-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .solution-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .solution-avatar {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* Proporção 16:9 */
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .avatar-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .feature {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        /* Architecture Section */
+        .architecture {
+            background: var(--light);
+        }
+
+        .architecture-diagram {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .diagram-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Demo Section */
+        .demo {
+            background: white;
+        }
+
+        .demo-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .demo-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .demo-visual {
+            flex: 1;
+            min-width: 300px;
+            background: var(--light);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .alert-box {
+            background: #fff8e1;
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        /* Impact Section */
+        .impact {
+            background: var(--light);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+        }
+
+        .chart {
+            height: 300px;
+            background: linear-gradient(to top, var(--primary) 70%, #e0e0e0 70%);
+            border-radius: 8px;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .chart-label {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        /* Market Section */
+        .market {
+            background: white;
+        }
+
+        .market-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .market-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .market-chart {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .growth-bar {
+            height: 30px;
+            background: linear-gradient(to right, var(--secondary), #a5d6a7);
+            border-radius: 15px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .growth-bar:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 85%;
+            background: linear-gradient(to right, var(--primary), #64b5f6);
+        }
+
+        .growth-label {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* Team Section */
+        .team {
+            background: var(--light);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .team-member {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .member-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .cta h2 {
+            color: white;
+        }
+
+        .cta h2:after {
+            background: white;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .hero {
+                padding: 80px 20px;
+            }
+            
+            .stats {
+                gap: 15px;
+            }
+            
+            .stat {
+                min-width: 150px;
+                padding: 15px;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <h1>Revolucionando a Gestão de Risco Clínico</h1>
+            <p>Reduza em 67% os litígios médicos com nossa solução de IA avançada</p>
+            <a href="#demo" class="btn">Solicitar Demonstração</a>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">42%</div>
+                    <div class="stat-text">Aumento em litígios médicos (2020-2024)</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">3.2x</div>
+                    <div class="stat-text">Crescimento na judicialização da saúde</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">R$ 18bi</div>
+                    <div class="stat-text">Custo anual com ações judiciais na saúde</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem" id="problem">
+        <div class="container">
+            <h2>O Problema Triplo na Saúde</h2>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Risco Clínico</h3>
+                    <p>Erros de documentação e comunicação geram 72% dos eventos adversos em instituições de saúde, expondo organizações a litígios multimilionários.</p>
+                </div>
+                <div class="problem-card">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>Sobrecarga Operacional</h3>
+                    <p>Profissionais gastam até 45% do tempo em tarefas administrativas, reduzindo o cuidado direto ao paciente e aumentando o burnout.</p>
+                </div>
+                <div class="problem-card">
+                    <i class="fas fa-user-md"></i>
+                    <h3>Desumanização</h3>
+                    <p>Sistemas complexos e fragmentados distanciam os profissionais da experiência humana do cuidado, impactando a qualidade assistencial.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution" id="solution">
+        <div class="container">
+            <h2>Nossa Solução</h2>
+            <div class="solution-content">
+                <div class="solution-text">
+                    <h3>Avatar de Atendimento Multimodal</h3>
+                    <p>Plataforma integrada que combina IA generativa com fluxos clínicos validados, oferecendo suporte contextualizado em tempo real para profissionais de saúde.</p>
+                    
+                    <div class="features-grid">
+                        <div class="feature">
+                            <i class="fas fa-robot"></i>
+                            <h4>Assistente Virtual</h4>
+                            <p>Interação natural por voz e texto com compreensão contextual</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-file-medical"></i>
+                            <h4>Documentação Automatizada</h4>
+                            <p>Registro preciso e estruturado durante a consulta</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-bell"></i>
+                            <h4>Alertas Inteligentes</h4>
+                            <p>Notificações proativas baseadas em protocolos clínicos</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-chart-line"></i>
+                            <h4>Análise Preditiva</h4>
+                            <p>Identificação de padrões de risco antes da ocorrência</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="solution-avatar">
+                    <div class="avatar-container">
+                        <div class="avatar-wrapper" id="avatar-wrapper">
+                            <!-- Avatar será inserido aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="architecture" id="architecture">
+        <div class="container">
+            <h2>Arquitetura de Precisão Clínica</h2>
+            <div class="architecture-diagram">
+                <div class="diagram-step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h3>LLM Especializado</h3>
+                        <p>Modelo de linguagem treinado em corpus médico-científico com mais de 2 milhões de artigos e guidelines</p>
+                    </div>
+                </div>
+                <div class="diagram-step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h3>Sistema RAG (Retrieval-Augmented Generation)</h3>
+                        <p>Acesso contextual a prontuários, protocolos institucionais e bases de conhecimento atualizadas</p>
+                    </div>
+                </div>
+                <div class="diagram-step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h3>Motor de Temporalidade</h3>
+                        <p>Análise de sequência temporal de eventos e documentação para identificação de inconsistências</p>
+                    </div>
+                </div>
+                <div class="diagram-step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h3>Interface Multimodal</h3>
+                        <p>Interação por voz, texto e visual com adaptação contextual ao fluxo de trabalho</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <div class="container">
+            <h2>Demonstração: Cenário Real</h2>
+            <div class="demo-container">
+                <div class="demo-text">
+                    <h3>Alerta de Temporalidade Documental</h3>
+                    <p>Em um cenário de paciente com múltiplas comorbidades, nosso sistema identifica inconsistência temporal entre a prescrição de anticoagulante e o último registro de coagulograma.</p>
+                    
+                    <div class="alert-box">
+                        <h4><i class="fas fa-exclamation-circle"></i> Alerta do Sistema</h4>
+                        <p><strong>Inconsistência temporal detectada:</strong> Prescrição de Varfarina realizada há 48 horas sem registro de INR atualizado. Protocolo institucional exige monitoramento a cada 24h durante ajuste de dose.</p>
+                        <p><strong>Ação recomendada:</strong> Solicitar coagulograma urgente e reavaliar posologia.</p>
+                    </div>
+                    
+                    <p>Este alerta preventivo evita possível complicação hemorrágica e subsequentemente, um evento adverso grave.</p>
+                </div>
+                <div class="demo-visual">
+                    <h3>Simulação de Fluxo</h3>
+                    <p>Interaja com nosso avatar para experimentar na prática como o sistema funciona:</p>
+                    
+                    <div class="avatar-container" style="max-width: 100%;">
+                        <div class="avatar-wrapper">
+                            <!-- Avatar será inserido aqui -->
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <a href="#contact" class="btn">Agendar Demonstração Personalizada</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section class="impact" id="impact">
+        <div class="container">
+            <h2>Impacto e ROI Mensurável</h2>
+            
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">67%</div>
+                    <div class="kpi-text">Redução em eventos adversos evitáveis</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">42%</div>
+                    <div class="kpi-text">Economia em custos com litígios</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">58%</div>
+                    <div class="kpi-text">Redução no tempo de documentação</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">3.1x</div>
+                    <div class="kpi-text">ROI no primeiro ano de implementação</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>Evolução de Indicadores Chave</h3>
+                <div class="chart"></div>
+                <div class="chart-label">
+                    <span>Antes da Implementação</span>
+                    <span>6 Meses Após</span>
+                </div>
+                <p style="text-align: center; margin-top: 20px;">Melhora significativa em todos os KPIs críticos dentro do primeiro semestre de uso</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Section -->
+    <section class="market" id="market">
+        <div class="container">
+            <h2>Mercado e Oportunidade</h2>
+            <div class="market-content">
+                <div class="market-text">
+                    <h3>HealthTech em Crescimento Explosivo</h3>
+                    <p>O mercado global de tecnologia para saúde deve atingir US$ 1,2 trilhão até 2027, com soluções de IA representando o segmento de mais rápido crescimento.</p>
+                    
+                    <h4 style="margin-top: 30px;">Nicho de Alto Valor</h4>
+                    <p>Focamos no segmento de gestão de risco clínico, um mercado de US$ 48 bilhões com crescimento anual de 18%.</p>
+                    
+                    <h4 style="margin-top: 30px;">Vantagem Competitiva</h4>
+                    <p>Nossa tecnologia de temporalidade documental é única no mercado, protegida por 3 patentes pendentes.</p>
+                </div>
+                <div class="market-chart">
+                    <h3>Projeção de Crescimento do Mercado</h3>
+                    
+                    <div style="margin: 30px 0;">
+                        <div class="growth-bar"></div>
+                        <div class="growth-label">
+                            <span>2024</span>
+                            <span>2027</span>
+                        </div>
+                        <p style="text-align: center; margin-top: 10px;">Crescimento projetado: 185%</p>
+                    </div>
+                    
+                    <div class="features-grid">
+                        <div class="feature">
+                            <i class="fas fa-hospital"></i>
+                            <h4>+2.300</h4>
+                            <p>Hospitais no Brasil como mercado potencial</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-clinic-medical"></i>
+                            <h4>+48.000</h4>
+                            <p>Clínicas e operadoras como clientes em potencial</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team" id="team">
+        <div class="container">
+            <h2>Time e Tração</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-photo">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3>Dr. Ana Silva</h3>
+                    <p>Médica intensivista com 15 anos de experiência e MBA em Gestão Hospitalar</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Carlos Mendes</h3>
+                    <p>CTO com background em IA na Google Health e PhD em Ciência da Computação</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Mariana Costa</h3>
+                    <p>Head de Product com experiência em scale-up de HealthTechs no Vale do Silício</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <h3>Dr. Roberto Almeida</h3>
+                    <p>Advogado especializado em direito médico com 20 anos de atuação</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 50px;">
+                <h3>Marcos Alcançados</h3>
+                <div class="stats" style="margin-top: 30px;">
+                    <div class="stat">
+                        <div class="stat-number">POC</div>
+                        <div class="stat-text">Concluída com 92% de satisfação</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">R$ 2,5M</div>
+                        <div class="stat-text">Em contratos pré-aprovados</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">3</div>
+                        <div class="stat-text">Hospitais piloto implementados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <div class="container">
+            <h2>Junte-se à Revolução na Segurança do Paciente</h2>
+            <p>Estamos abrindo nossa rodada seed de R$ 5 milhões para acelerar expansão e desenvolvimento.</p>
+            
+            <div class="cta-buttons">
+                <a href="#contact" class="btn">Solicitar Pitch Deck</a>
+                <a href="#demo" class="btn btn-secondary">Agendar Reunião com Fundadores</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <h3>MedAI Solutions</h3>
+            <p>Transformando a segurança do paciente através de tecnologia de ponta</p>
+            <p style="margin-top: 30px;">contato@medai.com.br | +55 (31) 99999-9999</p>
+            <p style="margin-top: 20px; font-size: 0.9rem;">&copy; 2025 MedAI Solutions. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Script para integrar o avatar do Heygen
+        !function(window) {
+            const host = "https://labs.heygen.com";
+            const url = host + "/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJBbm5fRG9jdG9yX1N0YW5kaW5nMl9wdWJs%0D%0AaWMiLCJwcmV2aWV3SW1nIjoiaHR0cHM6Ly9maWxlczIuaGV5Z2VuLmFpL2F2YXRhci92My82OTlh%0D%0ANGMyOTk1OTE0ZDM5YjJjYjMxMWE5MzBkNzcyMF80NTU3MC9wcmV2aWV3X3RhbGtfMy53ZWJwIiwi%0D%0AbmVlZFJlbW92ZUJhY2tncm91bmQiOmZhbHNlLCJrbm93bGVkZ2VCYXNlSWQiOiI2NjNiNzk0NTQ4%0D%0ANTQ0MzgzYjVmZDcwYTRjMzQwMGRiOSIsInVzZXJuYW1lIjoiY2M5YTE0MTZkZWQzNGVlZWE4OGQz%0D%0AMDhlYmUyOGJjZTEifQ%3D%3D&inIFrame=1";
+            
+            // Inserir o avatar nas áreas designadas
+            const avatarWrappers = document.querySelectorAll('.avatar-wrapper');
+            
+            avatarWrappers.forEach(wrapper => {
+                const iframe = document.createElement("iframe");
+                iframe.allowFullscreen = false;
+                iframe.title = "Avatar Médico Virtual";
+                iframe.role = "dialog";
+                iframe.allow = "microphone";
+                iframe.src = url;
+                iframe.style.width = "100%";
+                iframe.style.height = "100%";
+                iframe.style.border = "none";
+                
+                wrapper.appendChild(iframe);
+            });
+            
+            // Adicionar smooth scroll para links internos
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+        }(globalThis);
+    </script>
+</body>
+</html>

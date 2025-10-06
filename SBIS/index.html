@@ -4,7 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avatar SBIS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #0d47a1;
+            --secondary: #34a853;
+            --accent: #fbbc05;
+            --light: #f8f9fa;
+            --dark: #202124;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -19,52 +29,57 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding: 15px;
             overflow-x: hidden;
+            line-height: 1.5;
         }
 
         .container {
-            max-width: 1200px;
             width: 100%;
+            max-width: 100%;
             text-align: center;
-            padding: 20px;
+            padding: 10px;
         }
 
         header {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            padding: 0 10px;
         }
 
         h1 {
-            font-size: 2.8rem;
+            font-size: 2rem;
             margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
         }
 
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1rem;
             opacity: 0.9;
-            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        .avatar-section {
+            width: 100%;
             margin: 0 auto 30px;
         }
 
         .avatar-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
-            margin: 0 auto 40px;
+            margin: 0 auto 20px;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             background-color: rgba(0, 0, 0, 0.2);
-            padding: 20px;
+            padding: 15px;
         }
 
         .avatar-wrapper {
             position: relative;
             width: 100%;
             height: 0;
-            padding-bottom: 56.25%; /* Proporção 16:9 */
+            padding-bottom: 75%; /* Proporção 4:3 para mobile */
             border-radius: 8px;
             overflow: hidden;
             background-color: #000;
@@ -81,22 +96,31 @@
 
         .controls {
             display: flex;
-            justify-content: center;
-            gap: 15px;
+            flex-direction: column;
+            gap: 12px;
             margin-top: 20px;
-            flex-wrap: wrap;
+            width: 100%;
         }
 
         button {
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 12px 25px;
+            padding: 14px 20px;
             border-radius: 50px;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             backdrop-filter: blur(5px);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button i {
+            font-size: 1.2rem;
         }
 
         button:hover {
@@ -106,17 +130,19 @@
 
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 30px;
+            width: 100%;
         }
 
         .feature {
             background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px;
             backdrop-filter: blur(5px);
             transition: transform 0.3s ease;
+            text-align: left;
         }
 
         .feature:hover {
@@ -124,35 +150,166 @@
         }
 
         .feature h3 {
-            margin-bottom: 15px;
-            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature h3 i {
+            color: var(--accent);
         }
 
         footer {
-            margin-top: 50px;
+            margin-top: 40px;
             padding: 20px;
             font-size: 0.9rem;
             opacity: 0.8;
+            text-align: center;
+            width: 100%;
         }
 
-        /* Responsividade */
-        @media (max-width: 768px) {
+        /* Avatar Flutuante */
+        #heygen-floating-avatar {
+            z-index: 9999;
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            background: #000;
+        }
+
+        #heygen-floating-avatar iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #heygen-floating-avatar.expanded {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10000;
+        }
+
+        /* Fullscreen Mode */
+        .fullscreen-avatar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            background: #000;
+            display: none;
+        }
+
+        .fullscreen-avatar iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .close-fullscreen {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10001;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Melhorias para telas maiores */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+            }
+            
             h1 {
-                font-size: 2.2rem;
+                font-size: 2.5rem;
             }
             
             .subtitle {
-                font-size: 1rem;
+                font-size: 1.1rem;
+            }
+            
+            .avatar-wrapper {
+                padding-bottom: 56.25%; /* Proporção 16:9 para desktop */
             }
             
             .controls {
-                flex-direction: column;
-                align-items: center;
+                flex-direction: row;
+                justify-content: center;
             }
             
             button {
-                width: 100%;
-                max-width: 300px;
+                width: auto;
+                min-width: 200px;
+            }
+            
+            .features {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            #heygen-floating-avatar {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 900px;
+            }
+            
+            h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        /* Melhorias para orientação paisagem em mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .container {
+                padding: 5px;
+            }
+            
+            header {
+                margin-bottom: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+            
+            .avatar-container {
+                margin-bottom: 15px;
+                padding: 10px;
+            }
+            
+            .avatar-wrapper {
+                padding-bottom: 50%;
             }
         }
     </style>
@@ -164,29 +321,35 @@
             <p class="subtitle">Experimente uma conversa com nossa assistente virtual em tempo real. Clique no avatar para interagir!</p>
         </header>
         
-        <div class="avatar-container">
-            <div class="avatar-wrapper" id="avatar-wrapper">
-                <!-- O iframe será inserido aqui pelo script -->
-            </div>
-            
-            <div class="controls">
-                <button id="toggle-avatar">Mostrar/Ocultar Avatar</button>
-                <button id="fullscreen-btn">Modo Tela Cheia</button>
+        <div class="avatar-section">
+            <div class="avatar-container">
+                <div class="avatar-wrapper" id="avatar-wrapper">
+                    <!-- O iframe será inserido aqui pelo script -->
+                </div>
+                
+                <div class="controls">
+                    <button id="toggle-avatar">
+                        <i class="fas fa-eye"></i> Mostrar/Ocultar Avatar
+                    </button>
+                    <button id="fullscreen-btn">
+                        <i class="fas fa-expand"></i> Modo Tela Cheia
+                    </button>
+                </div>
             </div>
         </div>
         
         <div class="features">
             <div class="feature">
-                <h3>Interação em Tempo Real</h3>
-                <p>Converse naturalmente com o avatar e receba respostas instantâneas.</p>
+                <h3><i class="fas fa-comments"></i> Interação em Tempo Real</h3>
+                <p>Converse naturalmente com o avatar e receba respostas instantâneas através de voz e texto.</p>
             </div>
             <div class="feature">
-                <h3>Qualidade de Alto Nível</h3>
-                <p>Visualização em alta definição com áudio cristalino para uma experiência imersiva.</p>
+                <h3><i class="fas fa-hd-video"></i> Qualidade de Alto Nível</h3>
+                <p>Visualização em alta definição com áudio cristalino para uma experiência imersiva e realista.</p>
             </div>
             <div class="feature">
-                <h3>Interface Responsiva</h3>
-                <p>Funciona perfeitamente em dispositivos móveis, tablets e computadores.</p>
+                <h3><i class="fas fa-mobile-alt"></i> Interface Responsiva</h3>
+                <p>Funciona perfeitamente em dispositivos móveis, tablets e computadores com experiência otimizada.</p>
             </div>
         </div>
     </div>
@@ -195,62 +358,57 @@
         <p>Powered by SERUFO Labs | Desenvolvido para demonstração interativa</p>
     </footer>
 
+    <!-- Avatar Flutuante -->
+    <div id="heygen-floating-avatar"></div>
+
+    <!-- Fullscreen Avatar -->
+    <div class="fullscreen-avatar" id="fullscreen-avatar">
+        <button class="close-fullscreen" id="close-fullscreen">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
     <script>
         // Script modificado para exibir o avatar como quadrado dentro da área
         !function(window) {
             const host = "https://labs.heygen.com";
             const url = host + "/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJBbm5fRG9jdG9yX1N0YW5kaW5nMl9wdWJs%0D%0AaWMiLCJwcmV2aWV3SW1nIjoiaHR0cHM6Ly9maWxlczIuaGV5Z2VuLmFpL2F2YXRhci92My82OTlh%0D%0ANGMyOTk1OTE0ZDM5YjJjYjMxMWE5MzBkNzcyMF80NTU3MC9wcmV2aWV3X3RhbGtfMy53ZWJwIiwi%0D%0AbmVlZFJlbW92ZUJhY2tncm91bmQiOmZhbHNlLCJrbm93bGVkZ2VCYXNlSWQiOiI2NjNiNzk0NTQ4%0D%0ANTQ0MzgzYjVmZDcwYTRjMzQwMGRiOSIsInVzZXJuYW1lIjoiY2M5YTE0MTZkZWQzNGVlZWE4OGQz%0D%0AMDhlYmUyOGJjZTEifQ%3D%3D&inIFrame=1";
             
-            // Criar o iframe diretamente na área designada
+            // Elementos DOM
             const avatarWrapper = document.getElementById('avatar-wrapper');
-            const iframe = document.createElement("iframe");
-            iframe.allowFullscreen = false;
-            iframe.title = "Streaming Embed";
-            iframe.role = "dialog";
-            iframe.allow = "microphone";
-            iframe.src = url;
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.style.border = "none";
+            const floatingAvatar = document.getElementById('heygen-floating-avatar');
+            const fullscreenAvatar = document.getElementById('fullscreen-avatar');
+            const closeFullscreenBtn = document.getElementById('close-fullscreen');
             
-            // Adicionar o iframe diretamente ao wrapper
-            avatarWrapper.appendChild(iframe);
-            
-            // Criar o elemento flutuante para quando o avatar for minimizado
-            const floatingAvatar = document.createElement("div");
-            floatingAvatar.id = "heygen-floating-avatar";
-            floatingAvatar.style.cssText = `
-                z-index: 9999;
-                position: fixed;
-                left: 40px;
-                bottom: 40px;
-                width: 200px;
-                height: 200px;
-                border-radius: 50%;
-                border: 2px solid #fff;
-                box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);
-                transition: all linear 0.1s;
-                overflow: hidden;
-                opacity: 0;
-                visibility: hidden;
-                background: #000;
-            `;
-            
-            const floatingIframe = document.createElement("iframe");
-            floatingIframe.allowFullscreen = false;
-            floatingIframe.title = "Streaming Embed";
-            floatingIframe.role = "dialog";
-            floatingIframe.allow = "microphone";
-            floatingIframe.src = url;
-            floatingIframe.style.width = "100%";
-            floatingIframe.style.height = "100%";
-            floatingIframe.style.border = "none";
-            
-            floatingAvatar.appendChild(floatingIframe);
-            document.body.appendChild(floatingAvatar);
-            
+            // Estado da aplicação
             let isAvatarVisible = true;
-            let isExpanded = false;
+            let isFloatingExpanded = false;
+            
+            // Criar iframe principal
+            function createIframe() {
+                const iframe = document.createElement("iframe");
+                iframe.allowFullscreen = true;
+                iframe.title = "Avatar Virtual Interativo";
+                iframe.role = "dialog";
+                iframe.allow = "microphone; camera";
+                iframe.src = url;
+                iframe.style.width = "100%";
+                iframe.style.height = "100%";
+                iframe.style.border = "none";
+                return iframe;
+            }
+            
+            // Adicionar iframe ao wrapper principal
+            const mainIframe = createIframe();
+            avatarWrapper.appendChild(mainIframe);
+            
+            // Adicionar iframe ao avatar flutuante
+            const floatingIframe = createIframe();
+            floatingAvatar.appendChild(floatingIframe);
+            
+            // Adicionar iframe ao fullscreen
+            const fullscreenIframe = createIframe();
+            fullscreenAvatar.appendChild(fullscreenIframe);
             
             // Controles personalizados
             document.getElementById('toggle-avatar').addEventListener('click', function() {
@@ -261,6 +419,8 @@
                     avatarWrapper.style.display = "block";
                     floatingAvatar.style.opacity = "0";
                     floatingAvatar.style.visibility = "hidden";
+                    floatingAvatar.classList.remove('expanded');
+                    isFloatingExpanded = false;
                 } else {
                     // Mostrar como flutuante
                     avatarWrapper.style.display = "none";
@@ -270,29 +430,44 @@
             });
             
             document.getElementById('fullscreen-btn').addEventListener('click', function() {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch(err => {
-                        console.log(`Erro ao tentar entrar em modo tela cheia: ${err.message}`);
-                    });
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    }
+                fullscreenAvatar.style.display = "block";
+                document.body.style.overflow = "hidden";
+                
+                // Tentar entrar em fullscreen
+                if (fullscreenAvatar.requestFullscreen) {
+                    fullscreenAvatar.requestFullscreen();
+                } else if (fullscreenAvatar.webkitRequestFullscreen) {
+                    fullscreenAvatar.webkitRequestFullscreen();
+                } else if (fullscreenAvatar.msRequestFullscreen) {
+                    fullscreenAvatar.msRequestFullscreen();
+                }
+            });
+            
+            closeFullscreenBtn.addEventListener('click', function() {
+                fullscreenAvatar.style.display = "none";
+                document.body.style.overflow = "auto";
+                
+                // Sair do fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
                 }
             });
             
             // Permitir que o usuário clique no avatar flutuante para expandir
             floatingAvatar.addEventListener('click', function() {
-                isExpanded = !isExpanded;
-                
-                if (isExpanded) {
-                    floatingAvatar.style.width = "400px";
-                    floatingAvatar.style.height = "400px";
-                    floatingAvatar.style.borderRadius = "8px";
-                } else {
-                    floatingAvatar.style.width = "200px";
-                    floatingAvatar.style.height = "200px";
-                    floatingAvatar.style.borderRadius = "50%";
+                isFloatingExpanded = !isFloatingExpanded;
+                floatingAvatar.classList.toggle('expanded', isFloatingExpanded);
+            });
+            
+            // Fechar fullscreen com a tecla ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    fullscreenAvatar.style.display = "none";
+                    document.body.style.overflow = "auto";
                 }
             });
             

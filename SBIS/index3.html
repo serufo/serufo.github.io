@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avatar Virtual - SBIS</title>
+    <title>Assistente Virtual - SBIS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -274,6 +274,16 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Status da Tradução */
+        .translation-status {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
         /* Melhorias para telas maiores */
         @media (min-width: 768px) {
             .container {
@@ -350,6 +360,10 @@
                         <i class="fas fa-eye"></i> Mostrar/Ocultar
                     </button>
                 </div>
+                
+                <div class="translation-status" id="translation-status">
+                    <i class="fas fa-sync-alt"></i> Aguardando carregamento para traduzir...
+                </div>
             </div>
         </div>
         
@@ -384,12 +398,13 @@
     </div>
 
     <script>
-        // URL do avatar em português
+        // URL do avatar
         const avatarUrl = "https://labs.heygen.com/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJKdWR5X0RvY3Rvcl9TaXR0aW5nMl9wdWJs%0D%0AaWMiLCJwcmV2aWV3SW1nIjoiaHR0cHM6Ly9maWxlczIuaGV5Z2VuLmFpL2F2YXRhci92My8wMjJj%0D%0AZGIxZjA3OTE0ZTc1ODg3YzY5M2YwYzVmOTdkZF80NTY1MC9wcmV2aWV3X3RhbGtfMS53ZWJwIiwi%0D%0AbmVlZFJlbW92ZUJhY2tncm91bmQiOmZhbHNlLCJrbm93bGVkZ2VCYXNlSWQiOiI2NjNiNzk0NTQ4%0D%0ANTQ0MzgzYjVmZDcwYTRjMzQwMGRiOSIsInVzZXJuYW1lIjoiY2M5YTE0MTZkZWQzNGVlZWE4OGQz%0D%0AMDhlYmUyOGJjZTEifQ%3D%3D&inIFrame=1";
 
         // Elementos DOM
         const avatarWrapper = document.getElementById('avatar-wrapper');
         const loadingElement = document.getElementById('loading');
+        const translationStatus = document.getElementById('translation-status');
         const floatingAvatar = document.getElementById('heygen-floating-avatar');
         const fullscreenAvatar = document.getElementById('fullscreen-avatar');
         const closeFullscreenBtn = document.getElementById('close-fullscreen');
@@ -398,6 +413,107 @@
         let isAvatarVisible = true;
         let isFloatingExpanded = false;
         let chatStarted = false;
+        let translationAttempts = 0;
+        const maxTranslationAttempts = 10;
+
+        // Função para traduzir elementos dentro do iframe
+        function translateIframeContent(iframe) {
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Procurar por botões com texto "Chat Now"
+                const buttons = iframeDoc.querySelectorAll('button, [class*="button"], [class*="btn"]');
+                let foundChatNow = false;
+                
+                buttons.forEach(button => {
+                    if (button.textContent && button.textContent.trim().toLowerCase().includes('chat now')) {
+                        button.textContent = 'Começar Agora';
+                        foundChatNow = true;
+                        console.log('Botão "Chat Now" traduzido para "Começar Agora"');
+                    }
+                    
+                    // Traduzir outros textos comuns
+                    if (button.textContent && button.textContent.trim().toLowerCase().includes('start')) {
+                        button.textContent = button.textContent.replace(/start/gi, 'Começar');
+                    }
+                    
+                    if (button.textContent && button.textContent.trim().toLowerCase().includes('new chat')) {
+                        button.textContent = button.textContent.replace(/new chat/gi, 'Nova Conversa');
+                    }
+                });
+                
+                // Procurar em spans, divs e outros elementos
+                const textElements = iframeDoc.querySelectorAll('span, div, p, label, a');
+                textElements.forEach(element => {
+                    if (element.textContent && element.textContent.trim().toLowerCase() === 'chat now') {
+                        element.textContent = 'Começar Agora';
+                        foundChatNow = true;
+                    }
+                });
+                
+                if (foundChatNow) {
+                    translationStatus.innerHTML = '<i class="fas fa-check-circle"></i> Tradução aplicada com sucesso!';
+                    translationStatus.style.background = 'rgba(52, 168, 83, 0.3)';
+                    return true;
+                }
+                
+                return false;
+            } catch (error) {
+                console.log('Ainda não é possível acessar o conteúdo do iframe:', error.message);
+                return false;
+            }
+        }
+
+        // Observar mudanças no iframe para aplicar tradução
+        function observeIframeForTranslation(iframe) {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' || mutation.type === 'subtree') {
+                        const translated = translateIframeContent(iframe);
+                        if (translated) {
+                            observer.disconnect();
+                        }
+                    }
+                });
+            });
+
+            // Tentar observar quando o conteúdo estiver pronto
+            setTimeout(() => {
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    observer.observe(iframeDoc.body, {
+                        childList: true,
+                        subtree: true,
+                        characterData: true
+                    });
+                    
+                    // Também tentar traduzir imediatamente
+                    translateIframeContent(iframe);
+                } catch (error) {
+                    console.log('Ainda não é possível observar o iframe');
+                }
+            }, 1000);
+        }
+
+        // Tentativa periódica de tradução
+        function attemptPeriodicTranslation(iframe) {
+            const interval = setInterval(() => {
+                if (translationAttempts >= maxTranslationAttempts) {
+                    clearInterval(interval);
+                    translationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Não foi possível traduzir automaticamente';
+                    translationStatus.style.background = 'rgba(234, 67, 53, 0.3)';
+                    return;
+                }
+                
+                translationAttempts++;
+                translationStatus.innerHTML = `<i class="fas fa-sync-alt"></i> Tentando traduzir... (${translationAttempts}/${maxTranslationAttempts})`;
+                
+                const translated = translateIframeContent(iframe);
+                if (translated) {
+                    clearInterval(interval);
+                }
+            }, 1500);
+        }
 
         // Criar iframe principal
         function createIframe() {
@@ -411,15 +527,21 @@
             iframe.style.height = "100%";
             iframe.style.border = "none";
             
-            // Quando o iframe carregar, remover o loading
+            // Quando o iframe carregar
             iframe.onload = function() {
                 loadingElement.style.display = 'none';
-                // Simular clique automático no botão "Começar" após 2 segundos
+                translationStatus.innerHTML = '<i class="fas fa-search"></i> Procurando elementos para traduzir...';
+                
+                // Iniciar observação e tentativas de tradução
+                observeIframeForTranslation(iframe);
+                attemptPeriodicTranslation(iframe);
+                
+                // Simular clique automático após 3 segundos
                 setTimeout(() => {
                     if (!chatStarted) {
                         startChat();
                     }
-                }, 2000);
+                }, 3000);
             };
             
             return iframe;
@@ -431,20 +553,15 @@
             document.getElementById('start-chat').innerHTML = '<i class="fas fa-comments"></i> Conversa Iniciada';
             document.getElementById('start-chat').style.background = 'var(--secondary)';
             document.getElementById('start-chat').style.borderColor = 'var(--secondary)';
-            
-            // Aqui você pode adicionar lógica adicional para iniciar a conversa
-            // como enviar um comando para o iframe, se a API permitir
         }
 
-        // Adicionar iframe ao wrapper principal
+        // Adicionar iframes
         const mainIframe = createIframe();
         avatarWrapper.appendChild(mainIframe);
 
-        // Adicionar iframe ao avatar flutuante
         const floatingIframe = createIframe();
         floatingAvatar.appendChild(floatingIframe);
 
-        // Adicionar iframe ao fullscreen
         const fullscreenIframe = createIframe();
         fullscreenAvatar.appendChild(fullscreenIframe);
 
@@ -455,14 +572,12 @@
             isAvatarVisible = !isAvatarVisible;
             
             if (isAvatarVisible) {
-                // Mostrar na área principal
                 avatarWrapper.style.display = "block";
                 floatingAvatar.style.opacity = "0";
                 floatingAvatar.style.visibility = "hidden";
                 floatingAvatar.classList.remove('expanded');
                 isFloatingExpanded = false;
             } else {
-                // Mostrar como flutuante
                 avatarWrapper.style.display = "none";
                 floatingAvatar.style.opacity = "1";
                 floatingAvatar.style.visibility = "visible";
@@ -473,7 +588,6 @@
             fullscreenAvatar.style.display = "block";
             document.body.style.overflow = "hidden";
             
-            // Tentar entrar em fullscreen
             if (fullscreenAvatar.requestFullscreen) {
                 fullscreenAvatar.requestFullscreen();
             } else if (fullscreenAvatar.webkitRequestFullscreen) {
@@ -487,7 +601,6 @@
             fullscreenAvatar.style.display = "none";
             document.body.style.overflow = "auto";
             
-            // Sair do fullscreen
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             } else if (document.webkitExitFullscreen) {
@@ -497,13 +610,11 @@
             }
         });
 
-        // Permitir que o usuário clique no avatar flutuante para expandir
         floatingAvatar.addEventListener('click', function() {
             isFloatingExpanded = !isFloatingExpanded;
             floatingAvatar.classList.toggle('expanded', isFloatingExpanded);
         });
 
-        // Fechar fullscreen com a tecla ESC
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 fullscreenAvatar.style.display = "none";
@@ -511,7 +622,7 @@
             }
         });
 
-        // Inicialmente, o avatar está visível na área principal
+        // Estado inicial
         avatarWrapper.style.display = "block";
         floatingAvatar.style.opacity = "0";
         floatingAvatar.style.visibility = "hidden";

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar Virtual - SBIS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #0d47a1;
+            --secondary: #34a853;
+            --accent: #fbbc05;
+            --light: #f8f9fa;
+            --dark: #202124;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #2487a2, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            text-align: center;
+            padding: 10px;
+        }
+
+        header {
+            margin-bottom: 30px;
+            padding: 0 10px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin: 0 auto 20px;
+        }
+
+        .avatar-section {
+            width: 100%;
+            margin: 0 auto 30px;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 100%;
+            margin: 0 auto 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 75%;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .avatar-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button i {
+            font-size: 1.2rem;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease;
+            text-align: left;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature h3 i {
+            color: var(--accent);
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Avatar Flutuante */
+        #heygen-floating-avatar {
+            z-index: 9999;
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            background: #000;
+        }
+
+        #heygen-floating-avatar iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #heygen-floating-avatar.expanded {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10000;
+        }
+
+        /* Fullscreen Mode */
+        .fullscreen-avatar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            background: #000;
+            display: none;
+        }
+
+        .fullscreen-avatar iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .close-fullscreen {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10001;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 30px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Melhorias para telas maiores */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .avatar-wrapper {
+                padding-bottom: 56.25%;
+            }
+            
+            .controls {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            button {
+                width: auto;
+                min-width: 200px;
+            }
+            
+            .features {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            #heygen-floating-avatar {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 900px;
+            }
+            
+            h1 {
+                font-size: 2.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Assistente Virtual em Português</h1>
+            <p class="subtitle">Converse naturalmente em português com nossa especialista virtual</p>
+        </header>
+        
+        <div class="avatar-section">
+            <div class="avatar-container">
+                <div class="avatar-wrapper" id="avatar-wrapper">
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Carregando assistente virtual...</p>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="start-chat" class="btn-primary">
+                        <i class="fas fa-comments"></i> Começar Conversa
+                    </button>
+                    <button id="fullscreen-btn">
+                        <i class="fas fa-expand"></i> Tela Cheia
+                    </button>
+                    <button id="toggle-avatar">
+                        <i class="fas fa-eye"></i> Mostrar/Ocultar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3><i class="fas fa-language"></i> Português Nativo</h3>
+                <p>Assistente configurada para conversação fluente em português do Brasil.</p>
+            </div>
+            <div class="feature">
+                <h3><i class="fas fa-user-md"></i> Especialista em Saúde</h3>
+                <p>Conhecimento especializado em protocolos clínicos e orientações médicas.</p>
+            </div>
+            <div class="feature">
+                <h3><i class="fas fa-mobile-alt"></i> Totalmente Responsivo</h3>
+                <p>Experiência otimizada para todos os dispositivos móveis e desktop.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Powered by SERUFO Labs | Assistente Virtual em Português</p>
+    </footer>
+
+    <!-- Avatar Flutuante -->
+    <div id="heygen-floating-avatar"></div>
+
+    <!-- Fullscreen Avatar -->
+    <div class="fullscreen-avatar" id="fullscreen-avatar">
+        <button class="close-fullscreen" id="close-fullscreen">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script>
+        // URL do avatar em português
+        const avatarUrl = "https://labs.heygen.com/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJKdWR5X0RvY3Rvcl9TaXR0aW5nMl9wdWJs%0D%0AaWMiLCJwcmV2aWV3SW1nIjoiaHR0cHM6Ly9maWxlczIuaGV5Z2VuLmFpL2F2YXRhci92My8wMjJj%0D%0AZGIxZjA3OTE0ZTc1ODg3YzY5M2YwYzVmOTdkZF80NTY1MC9wcmV2aWV3X3RhbGtfMS53ZWJwIiwi%0D%0AbmVlZFJlbW92ZUJhY2tncm91bmQiOmZhbHNlLCJrbm93bGVkZ2VCYXNlSWQiOiI2NjNiNzk0NTQ4%0D%0ANTQ0MzgzYjVmZDcwYTRjMzQwMGRiOSIsInVzZXJuYW1lIjoiY2M5YTE0MTZkZWQzNGVlZWE4OGQz%0D%0AMDhlYmUyOGJjZTEifQ%3D%3D&inIFrame=1";
+
+        // Elementos DOM
+        const avatarWrapper = document.getElementById('avatar-wrapper');
+        const loadingElement = document.getElementById('loading');
+        const floatingAvatar = document.getElementById('heygen-floating-avatar');
+        const fullscreenAvatar = document.getElementById('fullscreen-avatar');
+        const closeFullscreenBtn = document.getElementById('close-fullscreen');
+
+        // Estado da aplicação
+        let isAvatarVisible = true;
+        let isFloatingExpanded = false;
+        let chatStarted = false;
+
+        // Criar iframe principal
+        function createIframe() {
+            const iframe = document.createElement("iframe");
+            iframe.allowFullscreen = true;
+            iframe.title = "Assistente Virtual em Português";
+            iframe.role = "dialog";
+            iframe.allow = "microphone; camera";
+            iframe.src = avatarUrl;
+            iframe.style.width = "100%";
+            iframe.style.height = "100%";
+            iframe.style.border = "none";
+            
+            // Quando o iframe carregar, remover o loading
+            iframe.onload = function() {
+                loadingElement.style.display = 'none';
+                // Simular clique automático no botão "Começar" após 2 segundos
+                setTimeout(() => {
+                    if (!chatStarted) {
+                        startChat();
+                    }
+                }, 2000);
+            };
+            
+            return iframe;
+        }
+
+        // Função para iniciar a conversa
+        function startChat() {
+            chatStarted = true;
+            document.getElementById('start-chat').innerHTML = '<i class="fas fa-comments"></i> Conversa Iniciada';
+            document.getElementById('start-chat').style.background = 'var(--secondary)';
+            document.getElementById('start-chat').style.borderColor = 'var(--secondary)';
+            
+            // Aqui você pode adicionar lógica adicional para iniciar a conversa
+            // como enviar um comando para o iframe, se a API permitir
+        }
+
+        // Adicionar iframe ao wrapper principal
+        const mainIframe = createIframe();
+        avatarWrapper.appendChild(mainIframe);
+
+        // Adicionar iframe ao avatar flutuante
+        const floatingIframe = createIframe();
+        floatingAvatar.appendChild(floatingIframe);
+
+        // Adicionar iframe ao fullscreen
+        const fullscreenIframe = createIframe();
+        fullscreenAvatar.appendChild(fullscreenIframe);
+
+        // Event Listeners
+        document.getElementById('start-chat').addEventListener('click', startChat);
+
+        document.getElementById('toggle-avatar').addEventListener('click', function() {
+            isAvatarVisible = !isAvatarVisible;
+            
+            if (isAvatarVisible) {
+                // Mostrar na área principal
+                avatarWrapper.style.display = "block";
+                floatingAvatar.style.opacity = "0";
+                floatingAvatar.style.visibility = "hidden";
+                floatingAvatar.classList.remove('expanded');
+                isFloatingExpanded = false;
+            } else {
+                // Mostrar como flutuante
+                avatarWrapper.style.display = "none";
+                floatingAvatar.style.opacity = "1";
+                floatingAvatar.style.visibility = "visible";
+            }
+        });
+
+        document.getElementById('fullscreen-btn').addEventListener('click', function() {
+            fullscreenAvatar.style.display = "block";
+            document.body.style.overflow = "hidden";
+            
+            // Tentar entrar em fullscreen
+            if (fullscreenAvatar.requestFullscreen) {
+                fullscreenAvatar.requestFullscreen();
+            } else if (fullscreenAvatar.webkitRequestFullscreen) {
+                fullscreenAvatar.webkitRequestFullscreen();
+            } else if (fullscreenAvatar.msRequestFullscreen) {
+                fullscreenAvatar.msRequestFullscreen();
+            }
+        });
+
+        closeFullscreenBtn.addEventListener('click', function() {
+            fullscreenAvatar.style.display = "none";
+            document.body.style.overflow = "auto";
+            
+            // Sair do fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        });
+
+        // Permitir que o usuário clique no avatar flutuante para expandir
+        floatingAvatar.addEventListener('click', function() {
+            isFloatingExpanded = !isFloatingExpanded;
+            floatingAvatar.classList.toggle('expanded', isFloatingExpanded);
+        });
+
+        // Fechar fullscreen com a tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                fullscreenAvatar.style.display = "none";
+                document.body.style.overflow = "auto";
+            }
+        });
+
+        // Inicialmente, o avatar está visível na área principal
+        avatarWrapper.style.display = "block";
+        floatingAvatar.style.opacity = "0";
+        floatingAvatar.style.visibility = "hidden";
+    </script>
+</body>
+</html>

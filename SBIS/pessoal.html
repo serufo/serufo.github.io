@@ -497,7 +497,7 @@
             right: -12px;
             top: 25px;
             background: var(--glass-bg);
-            transform: rotate(45-Resposta: 45deg);
+            transform: rotate(45deg);
             border: 1px solid var(--glass-border);
         }
 
@@ -1253,6 +1253,7 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script>
         // Mobile Menu Toggle
@@ -1292,6 +1293,8 @@
         });
 
         // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+        
         gsap.from('.hero-content h1', { opacity: 0, y: -50, duration: 1, ease: 'power3.out' });
         gsap.from('.hero-content p', { opacity: 0, y: 50, duration: 1, delay: 0.3, ease: 'power3.out' });
         gsap.from('.hero-btns', { opacity: 0, y: 50, duration: 1, delay: 0.6, ease: 'power3.out' });
@@ -1342,133 +1345,133 @@
         });
 
         // Particles.js
-particlesJS('particles-js', {
-    particles: {
-        number: {
-            value: 50,
-            density: {
-                enable: true,
-                value_area: 800
-            }
-        },
-        color: {
-            value: '#ffffff'
-        },
-        shape: {
-            type: 'circle',
-            stroke: {
-                width: 0,
-                color: '#000000'
-            }
-        },
-        opacity: {
-            value: 0.5,
-            random: true,
-            anim: {
-                enable: false,
-                speed: 1,
-                opacity_min: 0.1,
-                sync: false
-            }
-        },
-        size: {
-            value: 3,
-            random: true,
-            anim: {
-                enable: false,
-                speed: 40,
-                size_min: 0.1,
-                sync: false
-            }
-        },
-        line_linked: {
-            enable: true,
-            distance: 150,
-            color: '#ffffff',
-            opacity: 0.4,
-            width: 1
-        },
-        move: {
-            enable: true,
-            speed: 4,
-            direction: 'none',
-            random: false,
-            straight: false,
-            out_mode: 'out',
-            bounce: false,
-            attract: {
-                enable: false,
-                rotateX: 600,
-                rotateY: 1200
-            }
-        }
-    },
-    interactivity: {
-        detect_on: 'canvas',
-        events: {
-            onhover: {
-                enable: true,
-                mode: 'repulse'
-            },
-            onclick: {
-                enable: true,
-                mode: 'push'
-            },
-            resize: true
-        },
-        modes: {
-            grab: {
-                distance: 400,
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 50,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#ffffff'
+                },
+                shape: {
+                    type: 'circle',
+                    stroke: {
+                        width: 0,
+                        color: '#000000'
+                    }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    anim: {
+                        enable: false,
+                        speed: 1,
+                        opacity_min: 0.1,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: false,
+                        speed: 40,
+                        size_min: 0.1,
+                        sync: false
+                    }
+                },
                 line_linked: {
-                    opacity: 1
+                    enable: true,
+                    distance: 150,
+                    color: '#ffffff',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 4,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
                 }
             },
-            bubble: {
-                distance: 400,
-                size: 40,
-                duration: 2,
-                opacity: 8,
-                speed: 3
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'repulse'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 400,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    bubble: {
+                        distance: 400,
+                        size: 40,
+                        duration: 2,
+                        opacity: 8,
+                        speed: 3
+                    },
+                    repulse: {
+                        distance: 100,
+                        duration: 0.4
+                    },
+                    push: {
+                        particles_nb: 4
+                    },
+                    remove: {
+                        particles_nb: 2
+                    }
+                }
             },
-            repulse: {
-                distance: 100,
-                duration: 0.4
-            },
-            push: {
-                particles_nb: 4
-            },
-            remove: {
-                particles_nb: 2
+            retina_detect: true
+        });
+
+        // Dark Mode Toggle
+        document.querySelector('.theme-toggle').addEventListener('click', function() {
+            const body = document.body;
+            const icon = this.querySelector('i');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
             }
+            localStorage.setItem('theme', body.getAttribute('data-theme'));
+        });
+
+        // Initialize Theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        const icon = document.querySelector('.theme-toggle i');
+        if (savedTheme === 'dark') {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
         }
-    },
-    retina_detect: true
-});
-
-// Dark Mode Toggle
-document.querySelector('.theme-toggle').addEventListener('click', function() {
-    const body = document.body;
-    const icon = this.querySelector('i');
-    if (body.getAttribute('data-theme') === 'light') {
-        body.setAttribute('data-theme', 'dark');
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-    } else {
-        body.setAttribute('data-theme', 'light');
-        icon.classList.remove('fa-sun');
-        icon.classList.add('fa-moon');
-    }
-    localStorage.setItem('theme', body.getAttribute('data-theme'));
-});
-
-// Initialize Theme
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.body.setAttribute('data-theme', savedTheme);
-const icon = document.querySelector('.theme-toggle i');
-if (savedTheme === 'dark') {
-    icon.classList.remove('fa-moon');
-    icon.classList.add('fa-sun');
-}
     </script>
 </body>
 </html>

@@ -14,10 +14,11 @@
       transform: translateX(-50%);
       color: #fff;
       padding: 12px 20px;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.65);
       border-radius: 12px;
       max-width: 80%;
       text-align: center;
+      font-size: 16px;
     }
     #modal {
       position: fixed;
@@ -27,18 +28,20 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 14px;
       z-index: 10;
       color: white;
+      font-family: system-ui, sans-serif;
     }
     #modal input {
-      padding: 10px;
-      width: 280px;
+      padding: 12px;
+      width: 300px;
       border-radius: 8px;
       border: none;
+      font-size: 15px;
     }
     #modal button {
-      padding: 12px 28px;
+      padding: 12px 32px;
       border: none;
       border-radius: 8px;
       background: #4f46e5;
@@ -46,9 +49,14 @@
       font-size: 16px;
       cursor: pointer;
     }
+    #modal button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
   </style>
-  <!-- SDK oficial -->
-  <script src="https://cdn.guiji.ai/duix/sdk/0.3.1/duix.js"></script>
+
+  <!-- Arquivo local (coloque o duix.js na mesma pasta) -->
+  <script src="./duix.js"></script>
 </head>
 <body>
   <div class="container"></div>
@@ -58,11 +66,21 @@
     <h2>Iniciar Avatar Duix</h2>
     <input id="sign" placeholder="Cole o sign (JWT)" />
     <input id="conversationId" placeholder="Cole o conversationId" />
-    <button onclick="iniciar()">Começar</button>
+    <button id="btnStart" onclick="iniciar()">Começar</button>
+    <p style="font-size:13px;opacity:0.7;margin-top:8px">
+      Se o botão não funcionar, verifique o console (F12)
+    </p>
   </div>
 
   <script>
-    const duix = new window.Duix();
+    // Verifica se o SDK carregou
+    if (typeof window.Duix !== 'function') {
+      console.error('SDK Duix não carregou! Verifique se o arquivo duix.js está na mesma pasta.');
+      document.getElementById('btnStart').disabled = true;
+      document.getElementById('btnStart').innerText = 'SDK não encontrado';
+    }
+
+    let duix = null;
 
     function iniciar() {
       const sign = document.getElementById('sign').value.trim();
@@ -73,39 +91,57 @@
         return;
       }
 
-      // Eventos úteis
-      duix.on('error', err => console.error('Erro:', err));
+      try {
+        duix = new window.Duix();
+      } catch (e) {
+        console.error('Erro ao criar instância do Duix:', e);
+        alert('Erro ao criar o SDK. Veja o console.');
+        return;
+      }
+
+      // Eventos
+      duix.on('error', err => {
+        console.error('Erro do SDK:', err);
+      });
+
       duix.on('initialSuccess', () => {
-        console.log('SDK inicializado');
-        // start precisa ser chamado após initialSuccess e preferencialmente após clique do usuário
-        duix.start({ openAsr: true, muted: false })
+        console.log('SDK inicializado com sucesso');
+        duix.start({ openAsr: true })
           .then(res => console.log('Sessão iniciada', res))
           .catch(err => console.error('Falha no start', err));
       });
+
       duix.on('show', () => {
         document.getElementById('modal').style.display = 'none';
       });
+
       duix.on('speakSection', data => {
-        document.querySelector('.subtitle').innerText = data.text || '';
+        document.querySelector('.subtitle').innerText = data?.text || '';
       });
+
       duix.on('asrStart', () => {
         document.querySelector('.subtitle').innerText = '';
       });
 
-      // Inicialização
+      // Inicializa
       duix.init({
         sign,
-        containerLable: '.container',   // atenção: é "Lable" mesmo (typo oficial)
+        containerLable: '.container',   // "Lable" é o nome oficial (typo)
         conversationId,
         platform: 'duix.com'
       })
       .then(data => console.log('Init OK', data))
-      .catch(err => console.error('Init falhou', err));
+      .catch(err => {
+        console.error('Init falhou', err);
+        alert('Falha na inicialização. Veja o console (F12).');
+      });
     }
 
-    // Boa prática: liberar recursos ao sair
+    // Libera recursos ao sair da página
     window.addEventListener('beforeunload', () => {
-      if (duix) duix.stop();
+      if (duix) {
+        try { duix.stop(); } catch(e) {}
+      }
     });
   </script>
 </body>

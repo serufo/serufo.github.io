@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duix API - Teste Local Sem Servidor</title>
     
-    <!-- 1. Biblioteca para gerar JWT no próprio navegador (jsrsasign) -->
+    <!-- Biblioteca estável para assinatura HMAC-SHA256 -->
     <script src="https://cloudflare.com"></script>
     
-    <!-- 2. SDK Oficial do Duix (Guiji) via CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/duix-guiji-light@0.4.0/dist/duix.min.js"></script>
+    <!-- SDK Oficial do Duix (Guiji) via CDN -->
+    <script src="https://jsdelivr.net"></script>
 
     <style>
         body {
@@ -62,7 +62,6 @@
         <h2>Duix Client Controller</h2>
         <div id="status" class="status-badge">Desconectado</div>
 
-        <!-- Credenciais direto na tela para teste -->
         <div class="form-group">
             <label for="appId">App ID (Robot Code):</label>
             <input type="text" id="appId" placeholder="Ex: xxxxxxxxxxxxxxxxxx">
@@ -72,15 +71,13 @@
             <input type="password" id="appKey" placeholder="Sua App Key Privada do Console">
         </div>
         
-        <!-- Botão Único que Gera JWT e Liga o Avatar -->
         <button id="btnConnect" onclick="gerarTokenEIniciar()">Gerar JWT & Iniciar Avatar</button>
 
         <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
 
-        <!-- Comandos de Voz -->
         <div class="form-group">
             <label for="speechText">Texto de teste (say):</label>
-            <textarea id="speechText" rows="2">Olá! Estou rodando totalmente pelo navegador sem um servidor de backend!</textarea>
+            <textarea id="speechText" rows="2">Olá! Agora o token está sendo gerado perfeitamente direto no navegador!</textarea>
         </div>
         <button id="btnSay" class="secondary" onclick="enviarFala()" disabled>Transmitir Fala (say)</button>
 
@@ -106,7 +103,15 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // Função responsável por assinar o JWT localmente e iniciar o SDK
+        // Função nativa para codificar strings em formato Base64Url (padrão JWT)
+        function base64url(source) {
+            let encodedSource = CryptoJS.enc.Base64.stringify(source);
+            encodedSource = encodedSource.replace(/=+\$/, '');
+            encodedSource = encodedSource.replace(/\+/g, '-');
+            encodedSource = encodedSource.replace(/\//g, '_');
+            return encodedSource;
+        }
+
         function gerarTokenEIniciar() {
             const appId = document.getElementById('appId').value.trim();
             const appKey = document.getElementById('appKey').value.trim();
@@ -117,47 +122,57 @@
                 return;
             }
 
-            log('Gerando JWT no navegador com jsrsasign...');
+            log('Gerando JWT via Crypto-JS nativo...');
 
             try {
-                // Estrutura do Header e Payload exigidos pelo Duix (Guiji)
-                const oHeader = { alg: 'HS256', typ: 'JWT' };
-                const tNow = KJUR.jws.IntDate.get('now');
-                const tEnd = KJUR.jws.IntDate.get('now + 1h'); // Expira em 1 hora
-                
-                const oPayload = {
+                // 1. Definição do Header e Payload do Token
+                const header = { alg: "HS256", typ: "JWT" };
+                const tNow = Math.floor(Date.now() / 1000);
+                const tEnd = tNow + 3600; // Expira em 1 hora
+
+                const payload = {
                     appId: appId,
                     iat: tNow,
                     exp: tEnd
                 };
 
-                // Assina a string usando o algoritmo HMAC SHA256 com a sua AppKey secreta
-                const sHeader = JSON.stringify(oHeader);
-                const sPayload = JSON.stringify(oPayload);
-                const tokenJWT = KJUR.jws.JWS.sign("HS256", sHeader, sPayload, appKey);
+                // 2. Codificação das partes em Base64Url
+                const stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));
+                const encodedHeader = base64url(stringifiedHeader);
 
-                log('JWT gerado com sucesso!', 'success');
+                const stringifiedPayload = CryptoJS.enc.Utf8.parse(JSON.stringify(payload));
+                const encodedPayload = base64url(stringifiedPayload);
+
+                // 3. Criação da assinatura HMAC-SHA256 usando a AppKey
+                const tokenString = encodedHeader + "." + encodedPayload;
+                const signature = CryptoJS.HmacSHA256(tokenString, appKey);
+                const encodedSignature = base64url(signature);
+
+                // 4. Montagem final do Token JWT
+                const tokenJWT = tokenString + "." + encodedSignature;
+
+                log('JWT criado com sucesso!', 'success');
                 statusBadge.innerText = 'Conectando ao Streaming...';
                 statusBadge.style.background = '#f39c12';
 
                 // Inicializa o SDK do Duix
                 duixInstance = new DUIX({
-                    url: 'https://robot.guiji.ai/duix-cc/', 
+                    url: 'https://guiji.ai', 
                     logger: 'info',
                     container: document.getElementById('duixStage'),
                     robot: {
                         token: tokenJWT,
-                        code: appId // O código do robô geralmente equivale ao App ID do projeto
+                        code: appId
                     }
                 });
 
-                // Eventos do ciclo de vida da API
+                // Mapeamento dos Eventos
                 duixInstance.on('load', () => {
-                    log('Evento: "load" carregado.', 'success');
+                    log('Evento: "load" carregado com sucesso.', 'success');
                 });
 
                 duixInstance.on('canplaythrough', function () {
-                    log('Evento: "canplaythrough" disparado. Pronto para interagir.', 'success');
+                    log('Evento: "canplaythrough" disparado. O avatar está pronto!', 'success');
                     duixInstance.play();
                     document.getElementById('btnSay').disabled = false;
                     statusBadge.innerText = 'Online';
@@ -179,7 +194,7 @@
             const text = document.getElementById('speechText').value;
             if (duixInstance && text) {
                 log(`Executando duix.say(): "${text}"`);
-                duixInstance.say(text); // Dispara a síntese labial
+                duixInstance.say(text);
             }
         }
     </script>

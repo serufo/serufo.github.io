@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DUIX API Tester - Samia V0.2</title>
+  <title>DUIX API Tester - Samia V0.3</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #e0e0e0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -42,15 +42,11 @@
     .btn-sm { padding: 5px 10px; font-size: .76rem; }
     .btn-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 
-    /* CENTER - Avatar */
-    .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0a0a14; position: relative; }
-    #avatar-container { width: 100%; max-width: 640px; aspect-ratio: 16/9; background: #111; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #2a2a4a; }
-    #avatar-video { width: 100%; height: 100%; object-fit: cover; display: none; }
-    #avatar-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #444; }
-    #avatar-placeholder svg { width: 64px; height: 64px; opacity: .3; }
-    #avatar-placeholder p { font-size: .85rem; }
-
-    .avatar-controls { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+    /* CENTER - API information */
+    .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 32px; background: #0a0a14; text-align: center; }
+    .center h2 { color: #7c6af7; font-size: 1.2rem; }
+    .center p { max-width: 640px; color: #999; line-height: 1.6; font-size: .9rem; }
+    .center code { color: #b39ddb; }
 
     /* RIGHT - Logs */
     .right { width: 380px; min-width: 300px; background: #0d0d1a; border-left: 1px solid #2a2a4a; display: flex; flex-direction: column; }
@@ -84,7 +80,7 @@
 
 <header>
   <div class="status-dot" id="dot"></div>
-  <h1>DUIX API Tester - Samia V0.2</h1>
+  <h1>DUIX API Tester - Samia V0.3</h1>
   <span id="status-text">Desconectado</span>
 </header>
 
@@ -110,56 +106,51 @@
       <input id="token" placeholder="Bearer token..." />
     </div>
 
-    <!-- Conversations -->
+    <!-- Documented API: account and sessions -->
     <div class="section">
-      <h3>💬 Conversas</h3>
+      <h3>📊 Conta e sessões</h3>
       <div class="btn-row">
-        <button class="btn btn-info btn-sm" onclick="listConversations()"><span class="tag tag-get">GET</span> Listar</button>
-        <button class="btn btn-success btn-sm" onclick="createConversation()"><span class="tag tag-post">POST</span> Criar</button>
+        <button class="btn btn-info btn-sm" onclick="queryAccount()"><span class="tag tag-get">GET</span> Consultar conta</button>
+        <button class="btn btn-info btn-sm" onclick="getConcurrency()"><span class="tag tag-get">GET</span> Concorrência</button>
+        <button class="btn btn-info btn-sm" onclick="listSessions()"><span class="tag tag-get">GET</span> Sessões ativas</button>
       </div>
+      <label>Session UUID</label>
+      <input id="sessionId" placeholder="uuid retornado pelo SDK" />
+      <div class="btn-row">
+        <button class="btn btn-danger btn-sm" onclick="stopSession()"><span class="tag tag-get">GET</span> Encerrar sessão</button>
+        <button class="btn btn-danger btn-sm" onclick="stopAllSessions()"><span class="tag tag-get">GET</span> Encerrar todas</button>
+      </div>
+      <small style="display:block;margin-top:8px;color:#888;line-height:1.4">
+        Encerrar todas as sessões afeta todas as sessões ativas deste App ID.
+      </small>
+    </div>
+
+    <!-- Documented API: conversation details -->
+    <div class="section">
+      <h3>💬 Conversa</h3>
       <label>Conversation ID</label>
-      <input id="convId" placeholder="conv_id (preenchido auto)" />
+      <input id="conversationId" placeholder="conversationId" />
       <div class="btn-row">
-        <button class="btn btn-info btn-sm" onclick="getConversation()"><span class="tag tag-get">GET</span> Detalhes</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteConversation()"><span class="tag tag-del">DEL</span> Deletar</button>
+        <button class="btn btn-info btn-sm" onclick="getConversation()"><span class="tag tag-get">GET</span> Consultar detalhes</button>
       </div>
     </div>
 
-    <!-- Session -->
+    <!-- Documented API: avatar creation -->
     <div class="section">
-      <h3>🎬 Sessão / Avatar</h3>
-      <label>Avatar ID</label>
-      <input id="avatarId" placeholder="avatar_id" value="default" />
-      <label>Voice ID</label>
-      <input id="voiceId" placeholder="voice_id (opcional)" />
+      <h3>🧑 Criar avatar</h3>
+      <label>Conversation ID (obrigatório)</label>
+      <input id="avatarConversationId" placeholder="conversationId" />
+      <label>Nome da voz TTS (obrigatório)</label>
+      <input id="ttsName" placeholder="ttsName conforme painel Duix" />
+      <label>Nome do avatar (opcional)</label>
+      <input id="avatarName" placeholder="Nome" />
+      <label>Saudação (opcional)</label>
+      <input id="avatarGreeting" placeholder="Mensagem inicial" />
+      <label>Task ID</label>
+      <input id="taskId" placeholder="preenchido após criar" />
       <div class="btn-row">
-        <button class="btn btn-success" onclick="createSession()"><span class="tag tag-post">POST</span> Criar Sessão</button>
-      </div>
-      <label>Session ID</label>
-      <input id="sessionId" placeholder="session_id (preenchido auto)" />
-      <div class="btn-row">
-        <button class="btn btn-info btn-sm" onclick="getSession()"><span class="tag tag-get">GET</span> Status</button>
-        <button class="btn btn-danger btn-sm" onclick="stopSession()"><span class="tag tag-del">DEL</span> Parar</button>
-      </div>
-    </div>
-
-    <!-- Speak -->
-    <div class="section">
-      <h3>🗣️ Falar / Interagir</h3>
-      <label>Texto para falar</label>
-      <textarea id="speakText" placeholder="Digite o texto que o avatar vai falar...">Olá! Eu sou a Samia, sua assistente virtual.</textarea>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="sendSpeak()"><span class="tag tag-post">POST</span> Falar</button>
-        <button class="btn btn-warn btn-sm" onclick="interrupt()">⏹ Interromper</button>
-      </div>
-    </div>
-
-    <!-- Avatars & Voices -->
-    <div class="section">
-      <h3>📋 Recursos</h3>
-      <div class="btn-row">
-        <button class="btn btn-info btn-sm" onclick="listAvatars()"><span class="tag tag-get">GET</span> Avatares</button>
-        <button class="btn btn-info btn-sm" onclick="listVoices()"><span class="tag tag-get">GET</span> Vozes</button>
+        <button class="btn btn-success btn-sm" onclick="createAvatar()"><span class="tag tag-post">POST</span> Criar</button>
+        <button class="btn btn-info btn-sm" onclick="queryAvatar()"><span class="tag tag-get">GET</span> Consultar status</button>
       </div>
     </div>
 
@@ -167,20 +158,9 @@
 
   <!-- CENTER - Avatar -->
   <div class="center">
-    <div id="avatar-container">
-      <video id="avatar-video" autoplay playsinline></video>
-      <div id="avatar-placeholder">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-        </svg>
-        <p>Avatar aparecerá aqui</p>
-        <p style="font-size:.72rem;color:#333">Crie uma sessão para iniciar</p>
-      </div>
-    </div>
-    <div class="avatar-controls">
-      <button class="btn btn-warn btn-sm" onclick="interrupt()">⏹ Interromper fala</button>
-      <button class="btn btn-danger btn-sm" onclick="stopSession()">⏏ Encerrar sessão</button>
-    </div>
+    <h2>Duix OpenAPI V2</h2>
+    <p>As chamadas documentadas usam <code>https://app.duix.ai/duix-openapi-v2/sdk/v2</code>, enviam a assinatura no header <code>token</code> e usam os métodos e parâmetros definidos na referência oficial.</p>
+    <p>A inicialização e interação de avatar ao vivo (iniciar, falar e interromper) pertencem ao SDK H5, não a rotas REST de sessão. Use o <code>conversationId</code> da plataforma para inicializar o SDK.</p>
   </div>
 
   <!-- RIGHT - Logs -->
@@ -198,8 +178,7 @@
 </div>
 
 <script>
-  const BASE = 'https://api.duix.com';
-  let pc = null; // RTCPeerConnection
+  const BASE = 'https://app.duix.ai/duix-openapi-v2/sdk/v2';
 
   // ── Logging ──────────────────────────────────────────────
   function log(msg, type = 'info') {
@@ -233,6 +212,8 @@
 
   // ── HTTP helper ───────────────────────────────────────────
   async function api(method, path, body = null) {
+    return apiRequest(method, path, { body });
+
     const token = document.getElementById('token').value.trim();
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -251,6 +232,49 @@
     } catch (e) {
       log(`Erro: ${e.message}`, 'error');
       showResponse({ error: e.message });
+      return { ok: false, data: {} };
+    }
+
+  }
+
+  async function apiRequest(method, path, { query = {}, body = null } = {}) {
+    const token = document.getElementById('token').value.trim();
+    if (!token) {
+      log('Gere ou informe a assinatura JWT antes de chamar a API.', 'warn');
+      return { ok: false, data: {} };
+    }
+
+    const url = new URL(`${BASE}/${path}`);
+    Object.entries(query).forEach(([key, value]) => url.searchParams.set(key, String(value)));
+    const headers = { token };
+    if (body) headers['Content-Type'] = 'application/json';
+
+    log(`${method} ${url.pathname}${url.search}`, 'send');
+    try {
+      const res = await fetch(url, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined
+      });
+      const responseText = await res.text();
+      let data;
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        data = { response: responseText };
+      }
+      const ok = res.ok && data.success !== false;
+      log(`${res.status} ${res.statusText}${data.msg || data.message ? ` — ${data.msg || data.message}` : ''}`, ok ? 'success' : 'error');
+      showResponse(data);
+      setStatus(ok ? 'connected' : 'error', ok ? 'API Duix acessada' : 'Falha na chamada da API');
+      return { ok, status: res.status, data };
+    } catch (e) {
+      const message = e instanceof TypeError
+        ? `${e.message}. Pode ser bloqueio CORS do navegador; teste em localhost e confirme se a API permite chamadas cross-origin.`
+        : e.message;
+      log(`Erro: ${message}`, 'error');
+      showResponse({ error: message });
+      setStatus('error', 'Falha de rede/CORS');
       return { ok: false, data: {} };
     }
   }
@@ -300,155 +324,81 @@
     }
   }
 
-  // ── Conversations ─────────────────────────────────────────
-  async function listConversations() {
-    const r = await api('GET', '/v1/conversations');
-    if (r.ok) log(`${r.data.data?.length ?? 0} conversas encontradas`, 'success');
+  function getAppId() {
+    const appId = document.getElementById('appId').value.trim();
+    if (!appId) log('Informe o App ID.', 'warn');
+    return appId;
   }
 
-  async function createConversation() {
-    const r = await api('POST', '/v1/conversations', { title: 'Teste DUIX ' + Date.now() });
-    if (r.ok && r.data.id) {
-      document.getElementById('convId').value = r.data.id;
-      log(`Conversa criada: ${r.data.id}`, 'success');
-    }
+  async function queryAccount() {
+    await apiRequest('GET', 'queryAccount');
   }
 
-  async function getConversation() {
-    const id = document.getElementById('convId').value.trim();
-    if (!id) { log('Informe o Conversation ID', 'warn'); return; }
-    await api('GET', `/v1/conversations/${id}`);
+  async function getConcurrency() {
+    const appId = getAppId();
+    if (!appId) return;
+    await apiRequest('GET', 'getconcurrentNumber', { query: { appId } });
   }
 
-  async function deleteConversation() {
-    const id = document.getElementById('convId').value.trim();
-    if (!id) { log('Informe o Conversation ID', 'warn'); return; }
-    const r = await api('DELETE', `/v1/conversations/${id}`);
-    if (r.ok) { document.getElementById('convId').value = ''; log('Conversa deletada', 'success'); }
-  }
-
-  // ── Session / WebRTC ──────────────────────────────────────
-  async function createSession() {
-    const avatarId = document.getElementById('avatarId').value.trim();
-    const voiceId  = document.getElementById('voiceId').value.trim();
-    const body = { avatarId };
-    if (voiceId) body.voiceId = voiceId;
-
-    log('Criando sessão...', 'info');
-    const r = await api('POST', '/v1/sessions', body);
-    if (!r.ok) return;
-
-    const { sessionId, sdp, iceServers } = r.data;
-    if (sessionId) document.getElementById('sessionId').value = sessionId;
-
-    if (sdp && iceServers) {
-      log('Iniciando WebRTC...', 'info');
-      await startWebRTC(sessionId, sdp, iceServers);
-    } else {
-      log('Sessão criada (sem WebRTC nesta resposta)', 'warn');
-    }
-  }
-
-  async function startWebRTC(sessionId, remoteSdp, iceServers) {
-    if (pc) { pc.close(); pc = null; }
-
-    pc = new RTCPeerConnection({ iceServers });
-
-    pc.ontrack = (e) => {
-      log('Track recebida: ' + e.track.kind, 'recv');
-      if (e.track.kind === 'video') {
-        const video = document.getElementById('avatar-video');
-        video.srcObject = e.streams[0];
-        video.style.display = 'block';
-        document.getElementById('avatar-placeholder').style.display = 'none';
-        setStatus('connected', 'Avatar ativo');
-        log('Avatar conectado!', 'success');
-      }
-    };
-
-    pc.oniceconnectionstatechange = () => {
-      log(`ICE state: ${pc.iceConnectionState}`, 'info');
-      if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
-        setStatus('error', 'Desconectado');
-        resetVideo();
-      }
-    };
-
-    pc.onicecandidate = async (e) => {
-      if (e.candidate) {
-        log('Enviando ICE candidate...', 'send');
-        await api('POST', `/v1/sessions/${sessionId}/ice`, { candidate: e.candidate });
-      }
-    };
-
-    await pc.setRemoteDescription({ type: 'offer', sdp: remoteSdp });
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-
-    log('Enviando SDP answer...', 'send');
-    await api('POST', `/v1/sessions/${sessionId}/sdp`, { sdp: answer.sdp });
-  }
-
-  async function getSession() {
-    const id = document.getElementById('sessionId').value.trim();
-    if (!id) { log('Informe o Session ID', 'warn'); return; }
-    await api('GET', `/v1/sessions/${id}`);
+  async function listSessions() {
+    const appId = getAppId();
+    if (!appId) return;
+    await apiRequest('GET', 'getconcurrentList', { query: { appId } });
   }
 
   async function stopSession() {
-    const id = document.getElementById('sessionId').value.trim();
-    if (!id) { log('Informe o Session ID', 'warn'); return; }
-    const r = await api('DELETE', `/v1/sessions/${id}`);
-    if (r.ok) {
-      if (pc) { pc.close(); pc = null; }
-      resetVideo();
-      setStatus('', 'Sessão encerrada');
-      document.getElementById('sessionId').value = '';
-      log('Sessão encerrada', 'success');
+    const uuid = document.getElementById('sessionId').value.trim();
+    if (!uuid) {
+      log('Informe o Session UUID retornado pelo SDK.', 'warn');
+      return;
+    }
+    await apiRequest('GET', 'sessionStop', { query: { uuid } });
+  }
+
+  async function stopAllSessions() {
+    const appId = getAppId();
+    if (!appId) return;
+    if (!confirm('Isso encerrará todas as sessões ativas deste App ID. Continuar?')) return;
+    await apiRequest('GET', 'distroyCallSessionsByAppId', { query: { appId } });
+  }
+
+  async function getConversation() {
+    const conversationId = document.getElementById('conversationId').value.trim();
+    if (!conversationId) {
+      log('Informe o Conversation ID.', 'warn');
+      return;
+    }
+    await apiRequest('GET', 'getConversationById', { query: { conversationId } });
+  }
+
+  async function createAvatar() {
+    const conversationId = document.getElementById('avatarConversationId').value.trim();
+    const ttsName = document.getElementById('ttsName').value.trim();
+    if (!conversationId || !ttsName) {
+      log('Conversation ID e nome da voz TTS são obrigatórios.', 'warn');
+      return;
+    }
+    const body = { conversationId, ttsName };
+    const name = document.getElementById('avatarName').value.trim();
+    const greetings = document.getElementById('avatarGreeting').value.trim();
+    if (name) body.name = name;
+    if (greetings) body.greetings = greetings;
+
+    const result = await apiRequest('POST', 'createAvatar', { body });
+    const taskId = result.data.data?.taskId;
+    if (result.ok && taskId) {
+      document.getElementById('taskId').value = taskId;
+      log(`Avatar enviado para criação. Task ID: ${taskId}`, 'success');
     }
   }
 
-  function resetVideo() {
-    const video = document.getElementById('avatar-video');
-    video.srcObject = null;
-    video.style.display = 'none';
-    document.getElementById('avatar-placeholder').style.display = 'flex';
-  }
-
-  // ── Speak ─────────────────────────────────────────────────
-  async function sendSpeak() {
-    const sessionId = document.getElementById('sessionId').value.trim();
-    const text      = document.getElementById('speakText').value.trim();
-    if (!sessionId) { log('Crie uma sessão primeiro', 'warn'); return; }
-    if (!text)      { log('Digite um texto para falar', 'warn'); return; }
-    const r = await api('POST', `/v1/sessions/${sessionId}/speak`, { text });
-    if (r.ok) log('Avatar falando...', 'success');
-  }
-
-  async function interrupt() {
-    const sessionId = document.getElementById('sessionId').value.trim();
-    if (!sessionId) { log('Nenhuma sessão ativa', 'warn'); return; }
-    const r = await api('POST', `/v1/sessions/${sessionId}/interrupt`);
-    if (r.ok) log('Fala interrompida', 'warn');
-  }
-
-  // ── Resources ─────────────────────────────────────────────
-  async function listAvatars() {
-    const r = await api('GET', '/v1/avatars');
-    if (r.ok) {
-      const list = r.data.data ?? r.data.avatars ?? r.data;
-      log(`${Array.isArray(list) ? list.length : '?'} avatares disponíveis`, 'success');
-      if (Array.isArray(list)) list.forEach(a => log(`  • ${a.id ?? a.avatarId} — ${a.name ?? ''}`, 'recv'));
+  async function queryAvatar() {
+    const taskId = document.getElementById('taskId').value.trim();
+    if (!taskId) {
+      log('Informe o Task ID retornado pela criação do avatar.', 'warn');
+      return;
     }
-  }
-
-  async function listVoices() {
-    const r = await api('GET', '/v1/voices');
-    if (r.ok) {
-      const list = r.data.data ?? r.data.voices ?? r.data;
-      log(`${Array.isArray(list) ? list.length : '?'} vozes disponíveis`, 'success');
-      if (Array.isArray(list)) list.forEach(v => log(`  • ${v.id ?? v.voiceId} — ${v.name ?? ''} (${v.language ?? ''})`, 'recv'));
-    }
+    await apiRequest('GET', 'queryAvatar', { query: { taskId } });
   }
 
   log('DUIX API Tester iniciado. Preencha App ID e Secret para começar.', 'info');

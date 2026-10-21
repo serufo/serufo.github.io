@@ -1,13 +1,187 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Bem-vindo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duix API - Teste Local Sem Servidor</title>
+    
+    <!-- 1. Biblioteca para gerar JWT no próprio navegador (jsrsasign) -->
+    <script src="https://cloudflare.com"></script>
+    
+    <!-- 2. SDK Oficial do Duix (Guiji) via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/duix-guiji-light@0.4.0/dist/duix.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            flex: 1;
+            min-width: 320px;
+        }
+        .stage-container {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stage {
+            width: 100%;
+            height: 500px;
+            background-color: #1e1e24;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; }
+        input, textarea, button { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #3498db; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 5px; }
+        button:hover { background-color: #2980b9; }
+        button.secondary { background-color: #2ecc71; }
+        button.secondary:hover { background-color: #27ae60; }
+        .log-box { background: #272822; color: #f8f8f2; font-family: monospace; padding: 10px; height: 130px; overflow-y: auto; border-radius: 4px; font-size: 11px; margin-top: 15px; }
+        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #7f8c8d; color: white; margin-bottom: 15px; }
+    </style>
 </head>
 <body>
-	<main>
-		<h1>Bem-vindo!</h1>
-	</main>
+
+    <!-- PAINEL DE CONTROLE -->
+    <div class="panel">
+        <h2>Duix Client Controller</h2>
+        <div id="status" class="status-badge">Desconectado</div>
+
+        <!-- Credenciais direto na tela para teste -->
+        <div class="form-group">
+            <label for="appId">App ID (Robot Code):</label>
+            <input type="text" id="appId" placeholder="Ex: xxxxxxxxxxxxxxxxxx">
+        </div>
+        <div class="form-group">
+            <label for="appKey">App Key (Secret Chave):</label>
+            <input type="password" id="appKey" placeholder="Sua App Key Privada do Console">
+        </div>
+        
+        <!-- Botão Único que Gera JWT e Liga o Avatar -->
+        <button id="btnConnect" onclick="gerarTokenEIniciar()">Gerar JWT & Iniciar Avatar</button>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+
+        <!-- Comandos de Voz -->
+        <div class="form-group">
+            <label for="speechText">Texto de teste (say):</label>
+            <textarea id="speechText" rows="2">Olá! Estou rodando totalmente pelo navegador sem um servidor de backend!</textarea>
+        </div>
+        <button id="btnSay" class="secondary" onclick="enviarFala()" disabled>Transmitir Fala (say)</button>
+
+        <h3>Console de Eventos</h3>
+        <div id="logBox" class="log-box">Aguardando preenchimento...</div>
+    </div>
+
+    <!-- ÁREA DO AVATAR -->
+    <div class="stage-container">
+        <h2>Visualizador do Avatar</h2>
+        <div class="stage" id="duixStage"></div>
+    </div>
+
+    <script>
+        let duixInstance = null;
+
+        function log(message, type = 'info') {
+            const logBox = document.getElementById('logBox');
+            let color = '#f8f8f2';
+            if (type === 'error') color = '#f92672';
+            if (type === 'success') color = '#a6e22e';
+            logBox.innerHTML += `<div style="color: ${color}">[${new Date().toLocaleTimeString()}] ${message}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // Função responsável por assinar o JWT localmente e iniciar o SDK
+        function gerarTokenEIniciar() {
+            const appId = document.getElementById('appId').value.trim();
+            const appKey = document.getElementById('appKey').value.trim();
+            const statusBadge = document.getElementById('status');
+
+            if (!appId || !appKey) {
+                log('Erro: Insira o App ID e a App Key para assinar o token.', 'error');
+                return;
+            }
+
+            log('Gerando JWT no navegador com jsrsasign...');
+
+            try {
+                // Estrutura do Header e Payload exigidos pelo Duix (Guiji)
+                const oHeader = { alg: 'HS256', typ: 'JWT' };
+                const tNow = KJUR.jws.IntDate.get('now');
+                const tEnd = KJUR.jws.IntDate.get('now + 1h'); // Expira em 1 hora
+                
+                const oPayload = {
+                    appId: appId,
+                    iat: tNow,
+                    exp: tEnd
+                };
+
+                // Assina a string usando o algoritmo HMAC SHA256 com a sua AppKey secreta
+                const sHeader = JSON.stringify(oHeader);
+                const sPayload = JSON.stringify(oPayload);
+                const tokenJWT = KJUR.jws.JWS.sign("HS256", sHeader, sPayload, appKey);
+
+                log('JWT gerado com sucesso!', 'success');
+                statusBadge.innerText = 'Conectando ao Streaming...';
+                statusBadge.style.background = '#f39c12';
+
+                // Inicializa o SDK do Duix
+                duixInstance = new DUIX({
+                    url: 'https://robot.guiji.ai/duix-cc/', 
+                    logger: 'info',
+                    container: document.getElementById('duixStage'),
+                    robot: {
+                        token: tokenJWT,
+                        code: appId // O código do robô geralmente equivale ao App ID do projeto
+                    }
+                });
+
+                // Eventos do ciclo de vida da API
+                duixInstance.on('load', () => {
+                    log('Evento: "load" carregado.', 'success');
+                });
+
+                duixInstance.on('canplaythrough', function () {
+                    log('Evento: "canplaythrough" disparado. Pronto para interagir.', 'success');
+                    duixInstance.play();
+                    document.getElementById('btnSay').disabled = false;
+                    statusBadge.innerText = 'Online';
+                    statusBadge.style.background = '#2ecc71';
+                });
+
+                duixInstance.on('error', function (e) {
+                    log('Erro na API Duix: ' + JSON.stringify(e), 'error');
+                    statusBadge.innerText = 'Falha';
+                    statusBadge.style.background = '#e74c3c';
+                });
+
+            } catch (err) {
+                log('Falha na geração do JWT/Inicialização: ' + err.message, 'error');
+            }
+        }
+
+        function enviarFala() {
+            const text = document.getElementById('speechText').value;
+            if (duixInstance && text) {
+                log(`Executando duix.say(): "${text}"`);
+                duixInstance.say(text); // Dispara a síntese labial
+            }
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duix API Interactive Test Dashboard</title>
+    <!-- Inclua o script do SDK oficial do Duix aqui se fornecido via CDN global, ou compile localmente via npm -->
+    <!-- <script src="path/to/duix-sdk.js"></script> -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            flex: 1;
+            min-width: 300px;
+        }
+        .stage-container {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* Container onde o Avatar Digital será renderizado */
+        .stage {
+            width: 100%;
+            height: 500px;
+            background-color: #1e1e24;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 5px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button.secondary {
+            background-color: #2ecc71;
+        }
+        button.secondary:hover {
+            background-color: #27ae60;
+        }
+        .log-box {
+            background: #272822;
+            color: #f8f8f2;
+            font-family: monospace;
+            padding: 10px;
+            height: 150px;
+            overflow-y: auto;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #7f8c8d;
+            color: white;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PAINEL DE CONTROLE (Esquerda) -->
+    <div class="panel">
+        <h2>Duix API Controller</h2>
+        <div id="status" class="status-badge">Desconectado</div>
+
+        <!-- Autenticação e Configuração -->
+        <div class="form-group">
+            <label for="robotCode">Robot Code (AppID):</label>
+            <input type="text" id="robotCode" placeholder="Ex: xxxxxxxxxxxxxxxxxx">
+        </div>
+        <div class="form-group">
+            <label for="token">JWT Token:</label>
+            <input type="password" id="token" placeholder="Insira o token gerado via API">
+        </div>
+        <button id="btnInit" onclick="initializeDuix()">1. Inicializar Avatar</button>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+        <!-- Comandos de Interação -->
+        <div class="form-group">
+            <label for="speechText">Texto para o Avatar Falar:</label>
+            <textarea id="speechText" rows="3" placeholder="Digite algo para o avatar falar...">Olá, teste de API do Duix bem-sucedido!</textarea>
+        </div>
+        <button id="btnSay" class="secondary" onclick="triggerSpeech()" disabled>2. Enviar Fala (say)</button>
+        <button id="btnPlay" onclick="triggerPlay()" style="background-color: #9b59b6;" disabled>Forçar Play</button>
+
+        <!-- Console de Logs da API -->
+        <h3>Console de Eventos</h3>
+        <div id="logBox" class="log-box">Aguardando inicialização...</div>
+    </div>
+
+    <!-- ÁREA DE EXIBIÇÃO (Direita) -->
+    <div class="stage-container">
+        <h2>Visualizador do Avatar</h2>
+        <!-- O SDK do Duix irá injetar o player de vídeo/canvas dentro desta div .stage -->
+        <div class="stage" id="duixStage"></div>
+    </div>
+
+    <!-- Lógica de Integração com o SDK -->
+    <script>
+        let duixInstance = null;
+
+        // Função auxiliar para printar logs na tela
+        function log(message, type = 'info') {
+            const logBox = document.getElementById('logBox');
+            const time = new Date().toLocaleTimeString();
+            let color = '#f8f8f2';
+            if (type === 'error') color = '#f92672';
+            if (type === 'success') color = '#a6e22e';
+            
+            logBox.innerHTML += `<div style="color: ${color}">[${time}] ${message}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // 1. Inicialização do Duix com base no modelo estrutural oficial
+        function initializeDuix() {
+            const robotCode = document.getElementById('robotCode').value;
+            const token = document.getElementById('token').value;
+            const statusBadge = document.getElementById('status');
+
+            if (!robotCode || !token) {
+                log('Erro: Preencha o Robot Code e o Token JWT.', 'error');
+                return;
+            }
+
+            log('Inicializando instância do Duix...');
+            statusBadge.innerText = 'Conectando...';
+            statusBadge.style.background = '#f39c12';
+
+            try {
+                // Certifique-se de que o pacote 'duix-guiji' ou SDK global esteja carregado
+                // Caso use import/es6, mude a estrutura conforme necessário.
+                if (typeof DUIX === 'undefined') {
+                    log('Aviso: Objeto global "DUIX" não encontrado. Simulando ou certifique-se de importar o SDK.', 'error');
+                }
+
+                // Instanciação padrão documentada no repositório da Guiji
+                duixInstance = new DUIX({
+                    url: 'https://robot.guiji.ai/duix-cc/', // Endpoint padrão de streaming
+                    logger: 'info',
+                    container: document.getElementById('duixStage'),
+                    robot: {
+                        token: token,
+                        code: robotCode
+                    }
+                });
+
+                // --- MAPEAMENTO DE EVENTOS DA API ---
+                
+                // Evento disparado quando o avatar carrega as configurações básicas
+                duixInstance.on('load', () => {
+                    log('Evento: "load" detectado com sucesso!', 'success');
+                    statusBadge.innerText = 'Carregado';
+                    statusBadge.style.background = '#3498db';
+                });
+
+                // Evento disparado quando o buffer de vídeo está pronto para reprodução contínua
+                duixInstance.on('canplaythrough', function (e) {
+                    log('Evento: "canplaythrough" acionado. Vídeo pronto.', 'success');
+                    duixInstance.play();
+                    document.getElementById('btnSay').disabled = false;
+                    document.getElementById('btnPlay').disabled = false;
+                    statusBadge.innerText = 'Pronto / Transmitindo';
+                    statusBadge.style.background = '#2ecc71';
+                });
+
+                // Captura de falhas na conexão, token expirado ou codec de vídeo incompatível
+                duixInstance.on('error', function (e) {
+                    log('Evento Erro: ' + JSON.stringify(e), 'error');
+                    statusBadge.innerText = 'Erro na Conexão';
+                    statusBadge.style.background = '#e74c3c';
+                });
+
+                // Disparado quando o asset visual/modelo 3D/2D do corpo termina de renderizar
+                duixInstance.on('bodyload', function (e) {
+                    log('Evento: "bodyload" - Modelo visual totalmente renderizado.', 'success');
+                });
+
+            } catch (err) {
+                log('Falha fatal ao executar construtor DUIX: ' + err.message, 'error');
+            }
+        }
+
+        // 2. Testar Função de Síntese de Voz / Transmissão de Texto (say)
+        function triggerSpeech() {
+            const text = document.getElementById('speechText').value;
+            if (duixInstance && text) {
+                log(`Enviando comando "say": "${text}"`);
+                duixInstance.say(text);
+            } else {
+                log('Instância Duix ativa não encontrada para executar fala.', 'error');
+            }
+        }
+
+        // 3. Testar Comando Forçado de Play (play)
+        function triggerPlay() {
+            if (duixInstance) {
+                log('Forçando execução de duix.play()');
+                duixInstance.play();
+            }
+        }
+    </script>
+</body>
+</html>

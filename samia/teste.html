@@ -1,251 +1,425 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duix API Interactive Test Dashboard</title>
-    <!-- Inclua o script do SDK oficial do Duix aqui se fornecido via CDN global, ou compile localmente via npm -->
-    <!-- <script src="path/to/duix-sdk.js"></script> -->
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            gap: 20px;
-        }
-        .panel {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 20px;
-            flex: 1;
-            min-width: 300px;
-        }
-        .stage-container {
-            flex: 1.5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        /* Container onde o Avatar Digital será renderizado */
-        .stage {
-            width: 100%;
-            height: 500px;
-            background-color: #1e1e24;
-            border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
-        h2 {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 10px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        input, textarea, button {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 5px;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        button.secondary {
-            background-color: #2ecc71;
-        }
-        button.secondary:hover {
-            background-color: #27ae60;
-        }
-        .log-box {
-            background: #272822;
-            color: #f8f8f2;
-            font-family: monospace;
-            padding: 10px;
-            height: 150px;
-            overflow-y: auto;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-top: 15px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            background: #7f8c8d;
-            color: white;
-            margin-bottom: 15px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DUIX API Tester</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #e0e0e0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    header { background: #1a1a2e; padding: 12px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #2a2a4a; }
+    header h1 { font-size: 1.1rem; color: #7c6af7; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #444; transition: background .3s; }
+    .status-dot.connected { background: #4caf50; box-shadow: 0 0 6px #4caf50; }
+    .status-dot.error { background: #f44336; }
+    #status-text { font-size: .8rem; color: #888; }
+
+    .main { display: flex; flex: 1; overflow: hidden; }
+
+    /* LEFT PANEL */
+    .left { width: 320px; min-width: 280px; background: #13131f; border-right: 1px solid #2a2a4a; display: flex; flex-direction: column; overflow-y: auto; }
+
+    .section { padding: 14px; border-bottom: 1px solid #1e1e30; }
+    .section h3 { font-size: .75rem; text-transform: uppercase; letter-spacing: 1px; color: #7c6af7; margin-bottom: 10px; }
+
+    label { font-size: .78rem; color: #aaa; display: block; margin-bottom: 3px; margin-top: 8px; }
+    input, textarea, select {
+      width: 100%; padding: 7px 9px; background: #1e1e30; border: 1px solid #2e2e50;
+      border-radius: 6px; color: #e0e0e0; font-size: .82rem; outline: none;
+    }
+    input:focus, textarea:focus { border-color: #7c6af7; }
+    textarea { resize: vertical; min-height: 60px; }
+
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: .82rem; font-weight: 600; transition: opacity .2s; }
+    .btn:hover { opacity: .85; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-primary { background: #7c6af7; color: #fff; }
+    .btn-success { background: #2e7d32; color: #fff; }
+    .btn-danger  { background: #c62828; color: #fff; }
+    .btn-warn    { background: #e65100; color: #fff; }
+    .btn-info    { background: #0277bd; color: #fff; }
+    .btn-sm { padding: 5px 10px; font-size: .76rem; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+    /* CENTER - Avatar */
+    .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0a0a14; position: relative; }
+    #avatar-container { width: 100%; max-width: 640px; aspect-ratio: 16/9; background: #111; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #2a2a4a; }
+    #avatar-video { width: 100%; height: 100%; object-fit: cover; display: none; }
+    #avatar-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #444; }
+    #avatar-placeholder svg { width: 64px; height: 64px; opacity: .3; }
+    #avatar-placeholder p { font-size: .85rem; }
+
+    .avatar-controls { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+
+    /* RIGHT - Logs */
+    .right { width: 380px; min-width: 300px; background: #0d0d1a; border-left: 1px solid #2a2a4a; display: flex; flex-direction: column; }
+    .log-header { padding: 10px 14px; background: #13131f; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center; }
+    .log-header span { font-size: .75rem; text-transform: uppercase; letter-spacing: 1px; color: #7c6af7; }
+    #log-box { flex: 1; overflow-y: auto; padding: 10px; font-family: 'Courier New', monospace; font-size: .75rem; }
+    .log-entry { padding: 4px 6px; border-radius: 4px; margin-bottom: 3px; line-height: 1.4; word-break: break-all; }
+    .log-info  { color: #81d4fa; }
+    .log-success { color: #a5d6a7; }
+    .log-error { color: #ef9a9a; }
+    .log-warn  { color: #ffe082; }
+    .log-send  { color: #ce93d8; }
+    .log-recv  { color: #80cbc4; }
+    .log-time  { color: #555; margin-right: 6px; }
+
+    /* Response viewer */
+    #response-box { background: #0a0a14; border-top: 1px solid #2a2a4a; padding: 10px; max-height: 180px; overflow-y: auto; }
+    #response-box pre { font-size: .72rem; color: #b0bec5; white-space: pre-wrap; word-break: break-all; }
+
+    .tag { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: .7rem; font-weight: 700; }
+    .tag-get  { background: #1565c0; color: #fff; }
+    .tag-post { background: #2e7d32; color: #fff; }
+    .tag-del  { background: #b71c1c; color: #fff; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 3px; }
+  </style>
 </head>
 <body>
 
-    <!-- PAINEL DE CONTROLE (Esquerda) -->
-    <div class="panel">
-        <h2>Duix API Controller</h2>
-        <div id="status" class="status-badge">Desconectado</div>
+<header>
+  <div class="status-dot" id="dot"></div>
+  <h1>DUIX API Tester</h1>
+  <span id="status-text">Desconectado</span>
+</header>
 
-        <!-- Autenticação e Configuração -->
-        <div class="form-group">
-            <label for="robotCode">Robot Code (AppID):</label>
-            <input type="text" id="robotCode" placeholder="Ex: xxxxxxxxxxxxxxxxxx">
-        </div>
-        <div class="form-group">
-            <label for="token">JWT Token:</label>
-            <input type="password" id="token" placeholder="Insira o token gerado via API">
-        </div>
-        <button id="btnInit" onclick="initializeDuix()">1. Inicializar Avatar</button>
+<div class="main">
 
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+  <!-- LEFT PANEL -->
+  <div class="left">
 
-        <!-- Comandos de Interação -->
-        <div class="form-group">
-            <label for="speechText">Texto para o Avatar Falar:</label>
-            <textarea id="speechText" rows="3" placeholder="Digite algo para o avatar falar...">Olá, teste de API do Duix bem-sucedido!</textarea>
-        </div>
-        <button id="btnSay" class="secondary" onclick="triggerSpeech()" disabled>2. Enviar Fala (say)</button>
-        <button id="btnPlay" onclick="triggerPlay()" style="background-color: #9b59b6;" disabled>Forçar Play</button>
-
-        <!-- Console de Logs da API -->
-        <h3>Console de Eventos</h3>
-        <div id="logBox" class="log-box">Aguardando inicialização...</div>
+    <!-- Auth -->
+    <div class="section">
+      <h3>🔑 Autenticação</h3>
+      <label>App ID</label>
+      <input id="appId" placeholder="seu_app_id" />
+      <label>App Secret</label>
+      <input id="appSecret" type="password" placeholder="seu_app_secret" />
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="getToken()"><span class="tag tag-post">POST</span> Get Token</button>
+      </div>
+      <label>Token (preenchido automaticamente)</label>
+      <input id="token" placeholder="Bearer token..." />
     </div>
 
-    <!-- ÁREA DE EXIBIÇÃO (Direita) -->
-    <div class="stage-container">
-        <h2>Visualizador do Avatar</h2>
-        <!-- O SDK do Duix irá injetar o player de vídeo/canvas dentro desta div .stage -->
-        <div class="stage" id="duixStage"></div>
+    <!-- Conversations -->
+    <div class="section">
+      <h3>💬 Conversas</h3>
+      <div class="btn-row">
+        <button class="btn btn-info btn-sm" onclick="listConversations()"><span class="tag tag-get">GET</span> Listar</button>
+        <button class="btn btn-success btn-sm" onclick="createConversation()"><span class="tag tag-post">POST</span> Criar</button>
+      </div>
+      <label>Conversation ID</label>
+      <input id="convId" placeholder="conv_id (preenchido auto)" />
+      <div class="btn-row">
+        <button class="btn btn-info btn-sm" onclick="getConversation()"><span class="tag tag-get">GET</span> Detalhes</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteConversation()"><span class="tag tag-del">DEL</span> Deletar</button>
+      </div>
     </div>
 
-    <!-- Lógica de Integração com o SDK -->
-    <script>
-        let duixInstance = null;
+    <!-- Session -->
+    <div class="section">
+      <h3>🎬 Sessão / Avatar</h3>
+      <label>Avatar ID</label>
+      <input id="avatarId" placeholder="avatar_id" value="default" />
+      <label>Voice ID</label>
+      <input id="voiceId" placeholder="voice_id (opcional)" />
+      <div class="btn-row">
+        <button class="btn btn-success" onclick="createSession()"><span class="tag tag-post">POST</span> Criar Sessão</button>
+      </div>
+      <label>Session ID</label>
+      <input id="sessionId" placeholder="session_id (preenchido auto)" />
+      <div class="btn-row">
+        <button class="btn btn-info btn-sm" onclick="getSession()"><span class="tag tag-get">GET</span> Status</button>
+        <button class="btn btn-danger btn-sm" onclick="stopSession()"><span class="tag tag-del">DEL</span> Parar</button>
+      </div>
+    </div>
 
-        // Função auxiliar para printar logs na tela
-        function log(message, type = 'info') {
-            const logBox = document.getElementById('logBox');
-            const time = new Date().toLocaleTimeString();
-            let color = '#f8f8f2';
-            if (type === 'error') color = '#f92672';
-            if (type === 'success') color = '#a6e22e';
-            
-            logBox.innerHTML += `<div style="color: ${color}">[${time}] ${message}</div>`;
-            logBox.scrollTop = logBox.scrollHeight;
-        }
+    <!-- Speak -->
+    <div class="section">
+      <h3>🗣️ Falar / Interagir</h3>
+      <label>Texto para falar</label>
+      <textarea id="speakText" placeholder="Digite o texto que o avatar vai falar...">Olá! Eu sou a Samia, sua assistente virtual.</textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="sendSpeak()"><span class="tag tag-post">POST</span> Falar</button>
+        <button class="btn btn-warn btn-sm" onclick="interrupt()">⏹ Interromper</button>
+      </div>
+    </div>
 
-        // 1. Inicialização do Duix com base no modelo estrutural oficial
-        function initializeDuix() {
-            const robotCode = document.getElementById('robotCode').value;
-            const token = document.getElementById('token').value;
-            const statusBadge = document.getElementById('status');
+    <!-- Avatars & Voices -->
+    <div class="section">
+      <h3>📋 Recursos</h3>
+      <div class="btn-row">
+        <button class="btn btn-info btn-sm" onclick="listAvatars()"><span class="tag tag-get">GET</span> Avatares</button>
+        <button class="btn btn-info btn-sm" onclick="listVoices()"><span class="tag tag-get">GET</span> Vozes</button>
+      </div>
+    </div>
 
-            if (!robotCode || !token) {
-                log('Erro: Preencha o Robot Code e o Token JWT.', 'error');
-                return;
-            }
+  </div>
 
-            log('Inicializando instância do Duix...');
-            statusBadge.innerText = 'Conectando...';
-            statusBadge.style.background = '#f39c12';
+  <!-- CENTER - Avatar -->
+  <div class="center">
+    <div id="avatar-container">
+      <video id="avatar-video" autoplay playsinline></video>
+      <div id="avatar-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+        <p>Avatar aparecerá aqui</p>
+        <p style="font-size:.72rem;color:#333">Crie uma sessão para iniciar</p>
+      </div>
+    </div>
+    <div class="avatar-controls">
+      <button class="btn btn-warn btn-sm" onclick="interrupt()">⏹ Interromper fala</button>
+      <button class="btn btn-danger btn-sm" onclick="stopSession()">⏏ Encerrar sessão</button>
+    </div>
+  </div>
 
-            try {
-                // Certifique-se de que o pacote 'duix-guiji' ou SDK global esteja carregado
-                // Caso use import/es6, mude a estrutura conforme necessário.
-                if (typeof DUIX === 'undefined') {
-                    log('Aviso: Objeto global "DUIX" não encontrado. Simulando ou certifique-se de importar o SDK.', 'error');
-                }
+  <!-- RIGHT - Logs -->
+  <div class="right">
+    <div class="log-header">
+      <span>📡 Logs em tempo real</span>
+      <button class="btn btn-sm" style="background:#1e1e30;color:#aaa" onclick="clearLogs()">Limpar</button>
+    </div>
+    <div id="log-box"></div>
+    <div id="response-box">
+      <pre id="response-pre">// Resposta da última requisição aparecerá aqui</pre>
+    </div>
+  </div>
 
-                // Instanciação padrão documentada no repositório da Guiji
-                duixInstance = new DUIX({
-                    url: 'https://robot.guiji.ai/duix-cc/', // Endpoint padrão de streaming
-                    logger: 'info',
-                    container: document.getElementById('duixStage'),
-                    robot: {
-                        token: token,
-                        code: robotCode
-                    }
-                });
+</div>
 
-                // --- MAPEAMENTO DE EVENTOS DA API ---
-                
-                // Evento disparado quando o avatar carrega as configurações básicas
-                duixInstance.on('load', () => {
-                    log('Evento: "load" detectado com sucesso!', 'success');
-                    statusBadge.innerText = 'Carregado';
-                    statusBadge.style.background = '#3498db';
-                });
+<script>
+  const BASE = 'https://api.duix.com';
+  let pc = null; // RTCPeerConnection
 
-                // Evento disparado quando o buffer de vídeo está pronto para reprodução contínua
-                duixInstance.on('canplaythrough', function (e) {
-                    log('Evento: "canplaythrough" acionado. Vídeo pronto.', 'success');
-                    duixInstance.play();
-                    document.getElementById('btnSay').disabled = false;
-                    document.getElementById('btnPlay').disabled = false;
-                    statusBadge.innerText = 'Pronto / Transmitindo';
-                    statusBadge.style.background = '#2ecc71';
-                });
+  // ── Logging ──────────────────────────────────────────────
+  function log(msg, type = 'info') {
+    const box = document.getElementById('log-box');
+    const t = new Date().toLocaleTimeString('pt-BR', { hour12: false });
+    const el = document.createElement('div');
+    el.className = `log-entry log-${type}`;
+    el.innerHTML = `<span class="log-time">${t}</span>${escHtml(msg)}`;
+    box.appendChild(el);
+    box.scrollTop = box.scrollHeight;
+  }
 
-                // Captura de falhas na conexão, token expirado ou codec de vídeo incompatível
-                duixInstance.on('error', function (e) {
-                    log('Evento Erro: ' + JSON.stringify(e), 'error');
-                    statusBadge.innerText = 'Erro na Conexão';
-                    statusBadge.style.background = '#e74c3c';
-                });
+  function showResponse(data) {
+    document.getElementById('response-pre').textContent = JSON.stringify(data, null, 2);
+  }
 
-                // Disparado quando o asset visual/modelo 3D/2D do corpo termina de renderizar
-                duixInstance.on('bodyload', function (e) {
-                    log('Evento: "bodyload" - Modelo visual totalmente renderizado.', 'success');
-                });
+  function clearLogs() {
+    document.getElementById('log-box').innerHTML = '';
+    document.getElementById('response-pre').textContent = '// limpo';
+  }
 
-            } catch (err) {
-                log('Falha fatal ao executar construtor DUIX: ' + err.message, 'error');
-            }
-        }
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
 
-        // 2. Testar Função de Síntese de Voz / Transmissão de Texto (say)
-        function triggerSpeech() {
-            const text = document.getElementById('speechText').value;
-            if (duixInstance && text) {
-                log(`Enviando comando "say": "${text}"`);
-                duixInstance.say(text);
-            } else {
-                log('Instância Duix ativa não encontrada para executar fala.', 'error');
-            }
-        }
+  function setStatus(state, text) {
+    const dot = document.getElementById('dot');
+    dot.className = 'status-dot ' + state;
+    document.getElementById('status-text').textContent = text;
+  }
 
-        // 3. Testar Comando Forçado de Play (play)
-        function triggerPlay() {
-            if (duixInstance) {
-                log('Forçando execução de duix.play()');
-                duixInstance.play();
-            }
-        }
-    </script>
+  // ── HTTP helper ───────────────────────────────────────────
+  async function api(method, path, body = null) {
+    const token = document.getElementById('token').value.trim();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    log(`${method} ${path}`, 'send');
+    try {
+      const res = await fetch(BASE + path, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined
+      });
+      const data = await res.json().catch(() => ({}));
+      log(`${res.status} ${res.statusText}`, res.ok ? 'success' : 'error');
+      showResponse(data);
+      return { ok: res.ok, status: res.status, data };
+    } catch (e) {
+      log(`Erro: ${e.message}`, 'error');
+      showResponse({ error: e.message });
+      return { ok: false, data: {} };
+    }
+  }
+
+  // ── Auth ──────────────────────────────────────────────────
+  async function getToken() {
+    const appId     = document.getElementById('appId').value.trim();
+    const appSecret = document.getElementById('appSecret').value.trim();
+    if (!appId || !appSecret) { log('Preencha App ID e App Secret', 'warn'); return; }
+
+    const r = await api('POST', '/v1/auth/token', { appId, appSecret });
+    if (r.ok && r.data.token) {
+      document.getElementById('token').value = r.data.token;
+      setStatus('connected', 'Autenticado');
+      log('Token obtido com sucesso!', 'success');
+    } else {
+      setStatus('error', 'Falha na autenticação');
+    }
+  }
+
+  // ── Conversations ─────────────────────────────────────────
+  async function listConversations() {
+    const r = await api('GET', '/v1/conversations');
+    if (r.ok) log(`${r.data.data?.length ?? 0} conversas encontradas`, 'success');
+  }
+
+  async function createConversation() {
+    const r = await api('POST', '/v1/conversations', { title: 'Teste DUIX ' + Date.now() });
+    if (r.ok && r.data.id) {
+      document.getElementById('convId').value = r.data.id;
+      log(`Conversa criada: ${r.data.id}`, 'success');
+    }
+  }
+
+  async function getConversation() {
+    const id = document.getElementById('convId').value.trim();
+    if (!id) { log('Informe o Conversation ID', 'warn'); return; }
+    await api('GET', `/v1/conversations/${id}`);
+  }
+
+  async function deleteConversation() {
+    const id = document.getElementById('convId').value.trim();
+    if (!id) { log('Informe o Conversation ID', 'warn'); return; }
+    const r = await api('DELETE', `/v1/conversations/${id}`);
+    if (r.ok) { document.getElementById('convId').value = ''; log('Conversa deletada', 'success'); }
+  }
+
+  // ── Session / WebRTC ──────────────────────────────────────
+  async function createSession() {
+    const avatarId = document.getElementById('avatarId').value.trim();
+    const voiceId  = document.getElementById('voiceId').value.trim();
+    const body = { avatarId };
+    if (voiceId) body.voiceId = voiceId;
+
+    log('Criando sessão...', 'info');
+    const r = await api('POST', '/v1/sessions', body);
+    if (!r.ok) return;
+
+    const { sessionId, sdp, iceServers } = r.data;
+    if (sessionId) document.getElementById('sessionId').value = sessionId;
+
+    if (sdp && iceServers) {
+      log('Iniciando WebRTC...', 'info');
+      await startWebRTC(sessionId, sdp, iceServers);
+    } else {
+      log('Sessão criada (sem WebRTC nesta resposta)', 'warn');
+    }
+  }
+
+  async function startWebRTC(sessionId, remoteSdp, iceServers) {
+    if (pc) { pc.close(); pc = null; }
+
+    pc = new RTCPeerConnection({ iceServers });
+
+    pc.ontrack = (e) => {
+      log('Track recebida: ' + e.track.kind, 'recv');
+      if (e.track.kind === 'video') {
+        const video = document.getElementById('avatar-video');
+        video.srcObject = e.streams[0];
+        video.style.display = 'block';
+        document.getElementById('avatar-placeholder').style.display = 'none';
+        setStatus('connected', 'Avatar ativo');
+        log('Avatar conectado!', 'success');
+      }
+    };
+
+    pc.oniceconnectionstatechange = () => {
+      log(`ICE state: ${pc.iceConnectionState}`, 'info');
+      if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+        setStatus('error', 'Desconectado');
+        resetVideo();
+      }
+    };
+
+    pc.onicecandidate = async (e) => {
+      if (e.candidate) {
+        log('Enviando ICE candidate...', 'send');
+        await api('POST', `/v1/sessions/${sessionId}/ice`, { candidate: e.candidate });
+      }
+    };
+
+    await pc.setRemoteDescription({ type: 'offer', sdp: remoteSdp });
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+
+    log('Enviando SDP answer...', 'send');
+    await api('POST', `/v1/sessions/${sessionId}/sdp`, { sdp: answer.sdp });
+  }
+
+  async function getSession() {
+    const id = document.getElementById('sessionId').value.trim();
+    if (!id) { log('Informe o Session ID', 'warn'); return; }
+    await api('GET', `/v1/sessions/${id}`);
+  }
+
+  async function stopSession() {
+    const id = document.getElementById('sessionId').value.trim();
+    if (!id) { log('Informe o Session ID', 'warn'); return; }
+    const r = await api('DELETE', `/v1/sessions/${id}`);
+    if (r.ok) {
+      if (pc) { pc.close(); pc = null; }
+      resetVideo();
+      setStatus('', 'Sessão encerrada');
+      document.getElementById('sessionId').value = '';
+      log('Sessão encerrada', 'success');
+    }
+  }
+
+  function resetVideo() {
+    const video = document.getElementById('avatar-video');
+    video.srcObject = null;
+    video.style.display = 'none';
+    document.getElementById('avatar-placeholder').style.display = 'flex';
+  }
+
+  // ── Speak ─────────────────────────────────────────────────
+  async function sendSpeak() {
+    const sessionId = document.getElementById('sessionId').value.trim();
+    const text      = document.getElementById('speakText').value.trim();
+    if (!sessionId) { log('Crie uma sessão primeiro', 'warn'); return; }
+    if (!text)      { log('Digite um texto para falar', 'warn'); return; }
+    const r = await api('POST', `/v1/sessions/${sessionId}/speak`, { text });
+    if (r.ok) log('Avatar falando...', 'success');
+  }
+
+  async function interrupt() {
+    const sessionId = document.getElementById('sessionId').value.trim();
+    if (!sessionId) { log('Nenhuma sessão ativa', 'warn'); return; }
+    const r = await api('POST', `/v1/sessions/${sessionId}/interrupt`);
+    if (r.ok) log('Fala interrompida', 'warn');
+  }
+
+  // ── Resources ─────────────────────────────────────────────
+  async function listAvatars() {
+    const r = await api('GET', '/v1/avatars');
+    if (r.ok) {
+      const list = r.data.data ?? r.data.avatars ?? r.data;
+      log(`${Array.isArray(list) ? list.length : '?'} avatares disponíveis`, 'success');
+      if (Array.isArray(list)) list.forEach(a => log(`  • ${a.id ?? a.avatarId} — ${a.name ?? ''}`, 'recv'));
+    }
+  }
+
+  async function listVoices() {
+    const r = await api('GET', '/v1/voices');
+    if (r.ok) {
+      const list = r.data.data ?? r.data.voices ?? r.data;
+      log(`${Array.isArray(list) ? list.length : '?'} vozes disponíveis`, 'success');
+      if (Array.isArray(list)) list.forEach(v => log(`  • ${v.id ?? v.voiceId} — ${v.name ?? ''} (${v.language ?? ''})`, 'recv'));
+    }
+  }
+
+  log('DUIX API Tester iniciado. Preencha App ID e Secret para começar.', 'info');
+</script>
 </body>
 </html>

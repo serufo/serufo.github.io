@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DUIX API Tester</title>
+  <title>DUIX API Tester - Samia V0.2</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #e0e0e0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -84,7 +84,7 @@
 
 <header>
   <div class="status-dot" id="dot"></div>
-  <h1>DUIX API Tester</h1>
+  <h1>DUIX API Tester - Samia V0.2</h1>
   <span id="status-text">Desconectado</span>
 </header>
 
@@ -100,10 +100,13 @@
       <input id="appId" placeholder="seu_app_id" />
       <label>App Secret</label>
       <input id="appSecret" type="password" placeholder="seu_app_secret" />
+      <small style="display:block;margin-top:8px;color:#888;line-height:1.4">
+        Uso para testes locais. Não publique o App Secret no navegador.
+      </small>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="getToken()"><span class="tag tag-post">POST</span> Get Token</button>
+        <button class="btn btn-primary" onclick="getToken()">Gerar JWT</button>
       </div>
-      <label>Token (preenchido automaticamente)</label>
+      <label>Assinatura JWT (preenchida automaticamente)</label>
       <input id="token" placeholder="Bearer token..." />
     </div>
 
@@ -258,13 +261,42 @@
     const appSecret = document.getElementById('appSecret').value.trim();
     if (!appId || !appSecret) { log('Preencha App ID e App Secret', 'warn'); return; }
 
-    const r = await api('POST', '/v1/auth/token', { appId, appSecret });
-    if (r.ok && r.data.token) {
-      document.getElementById('token').value = r.data.token;
-      setStatus('connected', 'Autenticado');
-      log('Token obtido com sucesso!', 'success');
-    } else {
+    if (!globalThis.crypto?.subtle) {
+      log('Web Crypto indisponível. Abra esta página em HTTPS ou localhost.', 'error');
       setStatus('error', 'Falha na autenticação');
+      return;
+    }
+
+    try {
+      const encoder = new TextEncoder();
+      const now = Math.floor(Date.now() / 1000);
+      const header = { alg: 'HS256', typ: 'JWT' };
+      const payload = { iat: now, exp: now + 1800, appId };
+      const encodePart = (value) => btoa(String.fromCharCode(...encoder.encode(JSON.stringify(value))))
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+      const signingInput = `${encodePart(header)}.${encodePart(payload)}`;
+      const key = await globalThis.crypto.subtle.importKey(
+        'raw',
+        encoder.encode(appSecret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const signature = new Uint8Array(
+        await globalThis.crypto.subtle.sign('HMAC', key, encoder.encode(signingInput))
+      );
+      const encodedSignature = btoa(String.fromCharCode(...signature))
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+      document.getElementById('token').value = `${signingInput}.${encodedSignature}`;
+      setStatus('connected', 'Assinatura gerada');
+      log('JWT HS256 gerado localmente (validade de 30 minutos).', 'success');
+    } catch (e) {
+      setStatus('error', 'Falha ao gerar assinatura');
+      log(`Erro ao gerar JWT: ${e.message}`, 'error');
     }
   }
 

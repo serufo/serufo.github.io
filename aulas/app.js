@@ -91,55 +91,57 @@ function setStatus(msg, isError) {
 
 // ---------- Detecta GitHub Pages ----------
 function getGitHubRepoInfo() {
+  // Override explícito (meta tags ou window)
+  const metaOwner = document.querySelector('meta[name="github-owner"]')?.content?.trim();
+  const metaRepo = document.querySelector('meta[name="github-repo"]')?.content?.trim();
+  if (window.GITHUB_OWNER && window.GITHUB_REPO) {
+    return { owner: window.GITHUB_OWNER, repo: window.GITHUB_REPO, contentRoot: window.GITHUB_CONTENT_ROOT || '' };
+  }
+  if (metaOwner && metaRepo) {
+    const metaRoot = document.querySelector('meta[name="github-content-root"]')?.content?.trim() || '';
+    return { owner: metaOwner, repo: metaRepo, contentRoot: metaRoot };
+  }
+
   const host = window.location.hostname;
   if (!host.endsWith('github.io')) return null;
 
   const owner = host.replace(/\.github\.io$/i, '');
-  // Project page: username.github.io/repo-name/
-  // User page: username.github.io/
   const parts = window.location.pathname.split('/').filter(Boolean);
-  // Se o primeiro segmento parece ser o nome do repo (não é arquivo)
-  let repo = owner + '.github.io'; // default: site de usuário
-  if (parts.length >= 1 && !parts[0].includes('.')) {
-    repo = parts[0];
+  // Remove arquivo no final (index.html etc.)
+  if (parts.length && /\.(html?|htm)$/i.test(parts[parts.length - 1])) {
+    parts.pop();
   }
 
-  // Permite override via meta tags ou config global
-  const metaOwner = document.querySelector('meta[name="github-owner"]')?.content;
-  const metaRepo = document.querySelector('meta[name="github-repo"]')?.content;
-  if (window.GITHUB_OWNER && window.GITHUB_REPO) {
-    return { owner: window.GITHUB_OWNER, repo: window.GITHUB_REPO };
-  }
-  if (metaOwner && metaRepo) {
-    return { owner: metaOwner, repo: metaRepo };
-  }
+  // Site de usuário: owner.github.io  → repo = owner.github.io
+  // Project page clássico: owner.github.io/repo/ → repo = parts[0]
+  // Mas se o conteúdo está em subpasta do site de usuário (ex: /aulas/),
+  // o repo continua sendo owner.github.io e contentRoot = "aulas"
+  //
+  // Heurística: se existir repo GitHub com nome parts[0], seria project page.
+  // Como não podemos checar de forma síncrona, preferimos site de usuário
+  // quando meta não está definida: repo = owner.github.io, contentRoot = path.
 
-  return { owner, repo };
+  const repo = owner + '.github.io';
+  const contentRoot = parts.join('/'); // ex: "aulas"
+
+  return { owner, repo, contentRoot };
 }
 
 /** URL pública do arquivo no site (github.io) */
 function pagesFileUrl(pathInRepo) {
-  // pathInRepo tipo: pdfs/algoritmos/aula.pdf
-  const base = document.querySelector('base')?.href || window.location.origin + basePath();
+  // pathInRepo no repo: ex. aulas/pdfs/UFMG/arquivo.pdf
+  // No site: https://serufo.github.io/aulas/pdfs/UFMG/arquivo.pdf
+  const origin = window.location.origin;
   const clean = pathInRepo.replace(/^\/+/, '');
-  return new URL(clean, base.endsWith('/') ? base : base + '/').href;
+  return origin + '/' + clean;
 }
 
 function basePath() {
-  // Em project pages: /repo-name/
-  const info = getGitHubRepoInfo();
-  if (!info) {
-    // local: raiz
-    const path = window.location.pathname;
-    if (path.endsWith('.html')) {
-      return path.substring(0, path.lastIndexOf('/') + 1) || '/';
-    }
-    return path.endsWith('/') ? path : path + '/';
+  const path = window.location.pathname;
+  if (path.endsWith('.html')) {
+    return path.substring(0, path.lastIndexOf('/') + 1) || '/';
   }
-  const host = window.location.hostname;
-  const owner = host.replace(/\.github\.io$/i, '');
-  if (info.repo === owner + '.github.io') return '/';
-  return '/' + info.repo + '/';
+  return path.endsWith('/') ? path : path.replace(/\/[^/]*$/, '/');
 }
 
 // ---------- GitHub API: lista conteúdo do repositório ----------
@@ -155,7 +157,11 @@ async function scanViaGitHubAPI() {
     headers: { Accept: 'application/vnd.github+json' }
   });
   if (!repoRes.ok) {
-    throw new Error(`Repo ${owner}/${repo} não encontrado (${repoRes.status}). Confira se o repositório é público.`);
+    throw new Error(
+      `Repo ${owner}/${repo} não encontrado (${repoRes.status}). ` +
+      `Crie o repositório público https://github.com/${owner}/${repo} ` +
+      `ou ajuste as meta tags github-owner / github-repo no index.html para o nome real do repositório.`
+    );
   }
   const repoData = await repoRes.json();
   const branch = repoData.default_branch || 'main';
@@ -169,14 +175,19 @@ async function scanViaGitHubAPI() {
   const treeData = await treeRes.json();
   const files = [];
 
+  // PDFs ficam em: [contentRoot/]pdfs/...
+  // Ex.: aulas/pdfs/UFMG/FM/arquivo.pdf
+  const root = (info.contentRoot || '').replace(/^\/+|\/+$/g, '');
+  const pdfPrefix = root ? root + '/pdfs/' : 'pdfs/';
+
   for (const item of treeData.tree || []) {
     if (item.type !== 'blob') continue;
-    if (!/^pdfs\//i.test(item.path)) continue;
+    if (!item.path.toLowerCase().startsWith(pdfPrefix.toLowerCase())) continue;
     if (!/\.pdf$/i.test(item.path)) continue;
 
-    // pdfs/algoritmos/aula.pdf → pasta=algoritmos, subpasta=...
-    const rel = item.path.replace(/^pdfs\//i, '');
-    const segments = rel.split('/');
+    // rel dentro de pdfs/
+    const rel = item.path.slice(pdfPrefix.length);
+    const segments = rel.split('/').filter(Boolean);
     const name = segments[segments.length - 1];
     const pasta = segments.length > 1 ? segments[0] : 'raiz';
     const subpasta = segments.length > 2 ? segments.slice(1, -1).join('/') : '';

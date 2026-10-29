@@ -40,6 +40,7 @@ LABELS = {
     "intro-jogos-mobile": "Introdução Jogos e Mobile",
     "programacao-mobile": "Programação Mobile",
     "geral": "Geral",
+    "UFMG":"Universidade Federal de Minas Gerais",
 }
 
 def titulo_from_filename(name: str) -> str:

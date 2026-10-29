@@ -492,15 +492,16 @@
             <label for="pdfFilter">Pasta:</label>
             <select id="pdfFilter">
               <option value="todos">Todas as pastas</option>
-              <option value="algoritmos">algoritmos/</option>
-              <option value="sistemas-operacionais">sistemas-operacionais/</option>
-              <option value="desenvolvimento-de-jogos">desenvolvimento-de-jogos/</option>
-              <option value="intro-jogos-mobile">intro-jogos-mobile/</option>
-              <option value="programacao-mobile">programacao-mobile/</option>
-              <option value="geral">geral/</option>
             </select>
           </div>
+          <button type="button" class="btn btn-secondary" id="btnSelectFolder" title="Usar se a listagem automática não funcionar">
+            Selecionar pasta pdfs
+          </button>
+          <button type="button" class="btn btn-primary" id="btnRefreshPdfs" title="Varrer pasta novamente">
+            Atualizar
+          </button>
         </div>
+        <div id="pdfStatus" class="pdf-status"></div>
 
         <div class="pdf-count" id="pdfCount"></div>
 
@@ -514,27 +515,17 @@
         </div>
 
         <div class="pdf-help">
-          <h3>Como gerenciar os arquivos (bem simples)</h3>
-          <ol>
-            <li>Coloque o PDF na pasta correspondente dentro de <code>pdfs/</code>:</li>
-          </ol>
-          <ul class="folder-list">
-            <li><code>pdfs/algoritmos/</code></li>
-            <li><code>pdfs/sistemas-operacionais/</code></li>
-            <li><code>pdfs/desenvolvimento-de-jogos/</code></li>
-            <li><code>pdfs/intro-jogos-mobile/</code></li>
-            <li><code>pdfs/programacao-mobile/</code></li>
-            <li><code>pdfs/geral/</code> — qualquer outro material</li>
-          </ul>
-          <ol start="2">
-            <li>Rode o script na pasta do site:</li>
-          </ol>
-          <pre class="code-example">python gerar-catalogo.py</pre>
-          <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;">
-            O script lista automaticamente todos os PDFs das pastas e atualiza o catálogo.
-            Você não precisa editar código manualmente.
+          <h3>Como usar</h3>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:0.75rem;">
+            Coloque os PDFs (e subpastas) dentro de <code>pdfs/</code>. O site lista automaticamente o que estiver lá.
+            Sirva o site com um servidor local para a varredura funcionar:
           </p>
-        </div>
+          <pre class="code-example">python -m http.server 8080</pre>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.75rem;">
+            Depois abra <code>http://localhost:8080</code> e vá em <strong>Outros</strong>.
+            Se a listagem automática não aparecer, use o botão <strong>Selecionar pasta pdfs</strong>.
+          </p>
+        </div></div>
       </div>
     </section>
   </main>
@@ -547,6 +538,13 @@
     </div>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

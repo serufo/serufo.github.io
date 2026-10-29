@@ -1,13 +1,21 @@
-Prof. Serufo — Site SPA
+Prof. Serufo — Site SPA (GitHub Pages)
 
-COMO ABRIR
-  cd pasta-do-site
+HOSPEDAGEM
+  Este site é feito para GitHub Pages (*.github.io).
+
+ADICIONAR PDFs
+  1. Coloque os PDFs em pdfs/ (com subpastas se quiser)
+  2. git add pdfs && git commit -m "PDFs" && git push
+  3. Espere o deploy e abra a aba Outros (ou clique em Atualizar)
+
+  A listagem é automática via API do GitHub.
+  O repositório precisa ser público.
+
+SE A LISTAGEM FALHAR
+  No index.html, descomente e preencha:
+    <meta name="github-owner" content="seu-usuario" />
+    <meta name="github-repo" content="nome-do-repo" />
+
+TESTE LOCAL
   python -m http.server 8080
-  Abra http://localhost:8080
-
-ABA OUTROS (PDFs)
-  - Coloque os PDFs dentro de pdfs/ (pode usar subpastas)
-  - A listagem é automática (sem script)
-  - Cada arquivo mostra o nome e uma miniatura da 1ª página
-  - Botão "Atualizar" varre a pasta de novo
-  - Se a listagem automática falhar, use "Selecionar pasta pdfs"
+  (listagem local por HTML do servidor; no GitHub Pages usa a API)

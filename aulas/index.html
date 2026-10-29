@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prof. Serufo | FACISA</title>
-  <meta name="description" content="Site do Professor José Carlos Serufo Filho - FACISA. Materiais de Algoritmos, Sistemas Operacionais, Desenvolvimento de Jogos e Programação Mobile." />
+  <title>Prof. Serufo</title>
+  <meta name="description" content="Site do Professor José Carlos Serufo Filho. Materiais de Algoritmos, Sistemas Operacionais, Desenvolvimento de Jogos e Programação Mobile." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -65,6 +65,8 @@
             <a href="#mobile-material" data-page="mobile-material">Material</a>
           </div>
         </div>
+
+        <a href="#outros" class="nav-link" data-page="outros">Outros</a>
       </nav>
 
       <button class="menu-toggle" id="menuToggle" aria-label="Menu">
@@ -80,7 +82,7 @@
       <div class="hero hero-home">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-          <p class="hero-subtitle">FACISA</p>
+          <p class="hero-subtitle">Bem-vindo</p>
           <div class="hero-line"></div>
           <h1 class="hero-title">PROFESSOR</h1>
           <h2 class="hero-name">JOSÉ CARLOS SERUFO FILHO</h2>
@@ -92,7 +94,7 @@
           <div class="intro-card">
             <div class="card-icon">📚</div>
             <h3>Disciplinas</h3>
-            <p>Materiais e programas das disciplinas de computação ministradas na FACISA.</p>
+            <p>Materiais e programas das disciplinas de computação.</p>
           </div>
           <div class="intro-card">
             <div class="card-icon">💻</div>
@@ -142,6 +144,13 @@
               <div class="course-card-content">
                 <h3>Programação de Dispositivos Móveis</h3>
                 <span class="course-link">Ver material →</span>
+              </div>
+            </a>
+            <a href="#outros" class="course-card" data-page="outros">
+              <div class="course-card-bg outros"></div>
+              <div class="course-card-content">
+                <h3>Outros — PDFs e Materiais</h3>
+                <span class="course-link">Ver catálogo →</span>
               </div>
             </a>
           </div>
@@ -461,12 +470,79 @@
         </div>
       </div>
     </section>
+
+    <!-- OUTROS - Catálogo de PDFs por pastas -->
+    <section id="outros" class="page">
+      <div class="hero hero-outros">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">OUTROS</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Arquivos e materiais complementares</p>
+        </div>
+      </div>
+
+      <div class="container section">
+        <div class="pdf-toolbar">
+          <div class="search-box">
+            <input type="text" id="pdfSearch" placeholder="Buscar por nome do arquivo..." autocomplete="off" />
+            <span class="search-icon">🔍</span>
+          </div>
+          <div class="filter-group">
+            <label for="pdfFilter">Pasta:</label>
+            <select id="pdfFilter">
+              <option value="todos">Todas as pastas</option>
+              <option value="algoritmos">algoritmos/</option>
+              <option value="sistemas-operacionais">sistemas-operacionais/</option>
+              <option value="desenvolvimento-de-jogos">desenvolvimento-de-jogos/</option>
+              <option value="intro-jogos-mobile">intro-jogos-mobile/</option>
+              <option value="programacao-mobile">programacao-mobile/</option>
+              <option value="geral">geral/</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pdf-count" id="pdfCount"></div>
+
+        <!-- Árvore de pastas + arquivos -->
+        <div id="pdfTree" class="pdf-tree"></div>
+
+        <div class="pdf-empty" id="pdfEmpty" style="display:none;">
+          <div class="empty-icon">📁</div>
+          <h3>Nenhum arquivo encontrado</h3>
+          <p>Coloque PDFs nas pastas dentro de <code>pdfs/</code> e rode o script <code>gerar-catalogo.py</code>.</p>
+        </div>
+
+        <div class="pdf-help">
+          <h3>Como gerenciar os arquivos (bem simples)</h3>
+          <ol>
+            <li>Coloque o PDF na pasta correspondente dentro de <code>pdfs/</code>:</li>
+          </ol>
+          <ul class="folder-list">
+            <li><code>pdfs/algoritmos/</code></li>
+            <li><code>pdfs/sistemas-operacionais/</code></li>
+            <li><code>pdfs/desenvolvimento-de-jogos/</code></li>
+            <li><code>pdfs/intro-jogos-mobile/</code></li>
+            <li><code>pdfs/programacao-mobile/</code></li>
+            <li><code>pdfs/geral/</code> — qualquer outro material</li>
+          </ul>
+          <ol start="2">
+            <li>Rode o script na pasta do site:</li>
+          </ol>
+          <pre class="code-example">python gerar-catalogo.py</pre>
+          <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;">
+            O script lista automaticamente todos os PDFs das pastas e atualiza o catálogo.
+            Você não precisa editar código manualmente.
+          </p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
-      <p>© <span id="year"></span> Prof. José Carlos Serufo Filho — FACISA</p>
+      <p>© <span id="year"></span> Prof. José Carlos Serufo Filho.</p>
       <p class="footer-note">Site criado a partir do conteúdo original em Google Sites</p>
     </div>
   </footer>

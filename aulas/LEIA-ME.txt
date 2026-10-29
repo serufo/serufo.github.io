@@ -1,0 +1,21 @@
+Prof. Serufo — Site SPA
+
+1. Abrir o site
+   - Melhor: python -m http.server 8080   (depois acesse http://localhost:8080)
+   - Ou abra index.html no navegador
+
+2. Adicionar PDFs (aba Outros)
+   - Coloque o arquivo na pasta certa:
+       pdfs/algoritmos/
+       pdfs/sistemas-operacionais/
+       pdfs/desenvolvimento-de-jogos/
+       pdfs/intro-jogos-mobile/
+       pdfs/programacao-mobile/
+       pdfs/geral/
+   - Pode criar subpastas dentro delas (ex: pdfs/algoritmos/listas/)
+   - Depois rode:
+       python gerar-catalogo.py
+   - Atualize a página no navegador
+
+O script lista automaticamente todos os PDFs e atualiza catalogo.json.
+Não é preciso editar código.

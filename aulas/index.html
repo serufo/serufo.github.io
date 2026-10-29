@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prof. Serufo | FACISA</title>
+  <meta name="description" content="Site do Professor José Carlos Serufo Filho - FACISA. Materiais de Algoritmos, Sistemas Operacionais, Desenvolvimento de Jogos e Programação Mobile." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#home" class="logo" data-page="home">
+        <img src="https://lh3.googleusercontent.com/a-/AOh14Gj" alt="Prof. Serufo" class="logo-img" onerror="this.style.display='none'" />
+        <span>Prof. Serufo</span>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#home" class="nav-link active" data-page="home">Página inicial</a>
+        
+        <div class="dropdown">
+          <button class="nav-link dropdown-btn">Algoritmos e Estruturas de Dados <span class="chevron">▾</span></button>
+          <div class="dropdown-content">
+            <a href="#algoritmos" data-page="algoritmos">Visão Geral</a>
+            <a href="#algoritmos-material" data-page="algoritmos-material">Material</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="nav-link dropdown-btn">Sistemas Operacionais <span class="chevron">▾</span></button>
+          <div class="dropdown-content">
+            <a href="#so" data-page="so">Visão Geral</a>
+            <a href="#so-programa" data-page="so-programa">Programa</a>
+            <a href="#so-material" data-page="so-material">Material</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="nav-link dropdown-btn">Desenvolvimento de Jogos <span class="chevron">▾</span></button>
+          <div class="dropdown-content">
+            <a href="#jogos" data-page="jogos">Visão Geral</a>
+            <a href="#jogos-programa" data-page="jogos-programa">Programa</a>
+            <a href="#jogos-material" data-page="jogos-material">Material</a>
+            <a href="#jogos-aulas" data-page="jogos-aulas">Aulas</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="nav-link dropdown-btn">Introdução Programação de Jogos e Dispositivos Móveis <span class="chevron">▾</span></button>
+          <div class="dropdown-content">
+            <a href="#intro-jogos" data-page="intro-jogos">Visão Geral</a>
+            <a href="#intro-jogos-programa" data-page="intro-jogos-programa">Programa</a>
+            <a href="#intro-jogos-material" data-page="intro-jogos-material">Material</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button class="nav-link dropdown-btn">Programação de Dispositivos Móveis <span class="chevron">▾</span></button>
+          <div class="dropdown-content">
+            <a href="#mobile" data-page="mobile">Visão Geral</a>
+            <a href="#mobile-material" data-page="mobile-material">Material</a>
+          </div>
+        </div>
+      </nav>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="app">
+    <!-- HOME -->
+    <section id="home" class="page active">
+      <div class="hero hero-home">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <p class="hero-subtitle">FACISA</p>
+          <div class="hero-line"></div>
+          <h1 class="hero-title">PROFESSOR</h1>
+          <h2 class="hero-name">JOSÉ CARLOS SERUFO FILHO</h2>
+        </div>
+      </div>
+
+      <div class="container section">
+        <div class="intro-grid">
+          <div class="intro-card">
+            <div class="card-icon">📚</div>
+            <h3>Disciplinas</h3>
+            <p>Materiais e programas das disciplinas de computação ministradas na FACISA.</p>
+          </div>
+          <div class="intro-card">
+            <div class="card-icon">💻</div>
+            <h3>Algoritmos & SO</h3>
+            <p>Fundamentos de estruturas de dados e sistemas operacionais.</p>
+          </div>
+          <div class="intro-card">
+            <div class="card-icon">🎮</div>
+            <h3>Jogos & Mobile</h3>
+            <p>Desenvolvimento de jogos e programação para dispositivos móveis.</p>
+          </div>
+        </div>
+
+        <div class="courses-preview">
+          <h2 class="section-title">Disciplinas</h2>
+          <div class="course-grid">
+            <a href="#algoritmos" class="course-card" data-page="algoritmos">
+              <div class="course-card-bg algo"></div>
+              <div class="course-card-content">
+                <h3>Algoritmos e Estruturas de Dados</h3>
+                <span class="course-link">Ver material →</span>
+              </div>
+            </a>
+            <a href="#so" class="course-card" data-page="so">
+              <div class="course-card-bg so"></div>
+              <div class="course-card-content">
+                <h3>Sistemas Operacionais</h3>
+                <span class="course-link">Ver material →</span>
+              </div>
+            </a>
+            <a href="#jogos" class="course-card" data-page="jogos">
+              <div class="course-card-bg jogos"></div>
+              <div class="course-card-content">
+                <h3>Desenvolvimento de Jogos</h3>
+                <span class="course-link">Ver material →</span>
+              </div>
+            </a>
+            <a href="#intro-jogos" class="course-card" data-page="intro-jogos">
+              <div class="course-card-bg intro"></div>
+              <div class="course-card-content">
+                <h3>Introdução à Programação de Jogos e Dispositivos Móveis</h3>
+                <span class="course-link">Ver material →</span>
+              </div>
+            </a>
+            <a href="#mobile" class="course-card" data-page="mobile">
+              <div class="course-card-bg mobile"></div>
+              <div class="course-card-content">
+                <h3>Programação de Dispositivos Móveis</h3>
+                <span class="course-link">Ver material →</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALGORITMOS -->
+    <section id="algoritmos" class="page">
+      <div class="hero hero-algo">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">ALGORITMOS E<br>ESTRUTURAS DE DADOS</h1>
+          <div class="hero-line"></div>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="content-box">
+          <h2>Sobre a Disciplina</h2>
+          <p>Estudo dos principais algoritmos e estruturas de dados utilizadas na construção de software eficiente. Abrange análise de complexidade, listas, pilhas, filas, árvores, grafos e técnicas de ordenação e busca.</p>
+          <div class="action-buttons">
+            <a href="#algoritmos-material" class="btn btn-primary" data-page="algoritmos-material">Acessar Material</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="algoritmos-material" class="page">
+      <div class="hero hero-material">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">MATERIAL</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Algoritmos e Estruturas de Dados</p>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="material-card">
+          <div class="slides-embed">
+            <div class="slides-placeholder">
+              <div class="slides-icon">📊</div>
+              <h3>Algoritmos e Estrutura de Dados</h3>
+              <p>Prof. Serufo</p>
+              <a href="https://sites.google.com/view/serufo/algoritmos-e-estrutras-de-dados/material" target="_blank" rel="noopener" class="btn btn-primary">
+                Abrir Google Slides
+              </a>
+              <p class="note">O material original está hospedado no Google Sites / Google Slides.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SISTEMAS OPERACIONAIS -->
+    <section id="so" class="page">
+      <div class="hero hero-so">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">SISTEMAS<br>OPERACIONAIS</h1>
+          <div class="hero-line"></div>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="content-box">
+          <h2>Sobre a Disciplina</h2>
+          <p>Conceitos fundamentais de sistemas operacionais: processos, threads, gerenciamento de memória, sistemas de arquivos, escalonamento, sincronização e comunicação entre processos.</p>
+          <div class="action-buttons">
+            <a href="#so-programa" class="btn btn-secondary" data-page="so-programa">Programa</a>
+            <a href="#so-material" class="btn btn-primary" data-page="so-material">Material</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="so-programa" class="page">
+      <div class="hero hero-material">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">PROGRAMA</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Sistemas Operacionais</p>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="content-box">
+          <h2>Programa da Disciplina</h2>
+          <p>Conteúdo programático da disciplina de Sistemas Operacionais.</p>
+          <a href="https://sites.google.com/view/serufo/sistemas-operacionais/programa" target="_blank" rel="noopener" class="btn btn-primary">
+            Ver programa completo no Google Sites
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="so-material" class="page">
+      <div class="hero hero-material">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">MATERIAL</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Sistemas Operacionais</p>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="material-card">
+          <div class="slides-embed">
+            <div class="slides-placeholder">
+              <div class="slides-icon">💻</div>
+              <h3>SISTEMAS OPERACIONAIS</h3>
+              <p>Prof. Serufo</p>
+              <a href="https://sites.google.com/view/serufo/sistemas-operacionais/material" target="_blank" rel="noopener" class="btn btn-primary">
+                Abrir Google Slides
+              </a>
+              <p class="note">O material original está hospedado no Google Sites / Google Slides.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESENVOLVIMENTO DE JOGOS -->
+    <section id="jogos" class="page">
+      <div class="hero hero-jogos">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">DESENVOLVIMENTO<br>DE JOGOS</h1>
+          <div class="hero-line"></div>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="content-box">
+          <h2>Sobre a Disciplina</h2>
+          <p>Introdução ao desenvolvimento de jogos digitais. Conceitos de game design, engines, física, colisão, sprites, áudio e publicação de jogos.</p>
+          <div class="action-buttons">
+            <a href="#jogos-programa" class="btn btn-secondary" data-page="jogos-programa">Programa</a>
+            <a href="#jogos-material" class="btn btn-primary" data-page="jogos-material">Material</a>
+            <a href="#jogos-aulas" class="btn btn-secondary" data-page="jogos-aulas">Aulas</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="jogos-programa" class="page">
+      <div class="hero hero-material">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">PROGRAMA</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Desenvolvimento de Jogos</p>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="content-box">
+          <h2>Programa da Disciplina</h2>
+          <p>Conteúdo programático da disciplina de Desenvolvimento de Jogos.</p>
+          <a href="https://sites.google.com/view/serufo/desenvolvimento-de-jogos/programa" target="_blank" rel="noopener" class="btn btn-primary">
+            Ver programa completo no Google Sites
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="jogos-material" class="page">
+      <div class="hero hero-material-jogos">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">MATERIAL</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Desenvolvimento de Jogos</p>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="material-card">
+          <div class="slides-embed">
+            <div class="slides-placeholder">
+              <div class="slides-icon">🎮</div>
+              <h3>DESENVOLVIMENTO DE JOGOS</h3>
+              <p>Prof. Serufo</p>
+              <a href="https://sites.google.com/view/serufo/desenvolvimento-de-jogos/material" target="_blank" rel="noopener" class="btn btn-primary">
+                Abrir Google Slides
+              </a>
+              <p class="note">O material original está hospedado no Google Sites / Google Slides.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="jogos-aulas" class="page">
+      <div class="hero hero-material">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">AULAS</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Desenvolvimento de Jogos</p>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="content-box">
+          <h2>Material de Aulas</h2>
+          <p>Aulas e conteúdos complementares da disciplina.</p>
+          <a href="https://sites.google.com/view/serufo/desenvolvimento-de-jogos/material/aulas" target="_blank" rel="noopener" class="btn btn-primary">
+            Ver aulas no Google Sites
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTRODUÇÃO PROGRAMAÇÃO DE JOGOS E DISPOSITIVOS MÓVEIS -->
+    <section id="intro-jogos" class="page">
+      <div class="hero hero-intro">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">INTRODUÇÃO<br>PROGRAMAÇÃO DE JOGOS<br>E DISPOSITIVOS MÓVEIS</h1>
+          <div class="hero-line"></div>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="content-box">
+          <h2>Sobre a Disciplina</h2>
+          <p>Introdução aos conceitos de programação aplicados a jogos e dispositivos móveis. Fundamentos de desenvolvimento multiplataforma e interfaces interativas.</p>
+          <div class="action-buttons">
+            <a href="#intro-jogos-programa" class="btn btn-secondary" data-page="intro-jogos-programa">Programa</a>
+            <a href="#intro-jogos-material" class="btn btn-primary" data-page="intro-jogos-material">Material</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="intro-jogos-programa" class="page">
+      <div class="hero hero-material">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">PROGRAMA</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Introdução Programação de Jogos e Dispositivos Móveis</p>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="content-box">
+          <h2>Programa da Disciplina</h2>
+          <a href="https://sites.google.com/view/serufo/introdu%C3%A7%C3%A3o-programa%C3%A7%C3%A3o-de-jogos-e-dispositivos-m%C3%B3veis/programa" target="_blank" rel="noopener" class="btn btn-primary">
+            Ver programa completo no Google Sites
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="intro-jogos-material" class="page">
+      <div class="hero hero-material">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">MATERIAL</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Introdução Programação de Jogos e Dispositivos Móveis</p>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="material-card">
+          <div class="slides-embed">
+            <div class="slides-placeholder">
+              <div class="slides-icon">📱</div>
+              <h3>Introdução à Programação de Jogos e Dispositivos Móveis</h3>
+              <p>Prof. Serufo</p>
+              <a href="https://sites.google.com/view/serufo/introdu%C3%A7%C3%A3o-programa%C3%A7%C3%A3o-de-jogos-e-dispositivos-m%C3%B3veis/material" target="_blank" rel="noopener" class="btn btn-primary">
+                Abrir Google Slides
+              </a>
+              <p class="note">O material original está hospedado no Google Sites / Google Slides.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRAMAÇÃO DE DISPOSITIVOS MÓVEIS -->
+    <section id="mobile" class="page">
+      <div class="hero hero-mobile">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">PROGRAMAÇÃO DE<br>DISPOSITIVOS MÓVEIS</h1>
+          <div class="hero-line"></div>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="content-box">
+          <h2>Sobre a Disciplina</h2>
+          <p>Desenvolvimento de aplicações para dispositivos móveis. Conceitos de UI/UX mobile, frameworks, armazenamento local, sensores e publicação nas lojas.</p>
+          <div class="action-buttons">
+            <a href="#mobile-material" class="btn btn-primary" data-page="mobile-material">Acessar Material</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mobile-material" class="page">
+      <div class="hero hero-material">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">MATERIAL</h1>
+          <div class="hero-line"></div>
+          <p class="hero-subtitle">Programação de Dispositivos Móveis</p>
+        </div>
+      </div>
+      <div class="container section">
+        <div class="material-card">
+          <div class="slides-embed">
+            <div class="slides-placeholder">
+              <div class="slides-icon">📲</div>
+              <h3>Programação de Dispositivos Móveis</h3>
+              <p>Prof. Serufo</p>
+              <a href="https://sites.google.com/view/serufo/programa%C3%A7%C3%A3o-de-dispositivos-m%C3%B3veis/material" target="_blank" rel="noopener" class="btn btn-primary">
+                Abrir Google Slides
+              </a>
+              <p class="note">O material original está hospedado no Google Sites / Google Slides.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© <span id="year"></span> Prof. José Carlos Serufo Filho — FACISA</p>
+      <p class="footer-note">Site criado a partir do conteúdo original em Google Sites</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

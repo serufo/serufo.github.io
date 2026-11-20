@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prof. Serufo</title>
-  <meta name="github-owner" content="serufo" />
-  <meta name="github-repo" content="serufo.github.io" />
-  <meta name="github-content-root" content="aulas" />
-  <!-- Se a detecção automática do repo falhar, preencha: -->
-<meta name="description" content="Site do Professor José Carlos Serufo Filho. Materiais de Algoritmos, Sistemas Operacionais, Desenvolvimento de Jogos e Programação Mobile." />
+  <title>Prof. Serufo — Aulas e Materiais</title>
+  <meta name="description" content="Site de aulas do Professor José Carlos Serufo Filho. Materiais de Algoritmos, Sistemas Operacionais, Desenvolvimento de Jogos, Programação Mobile e catálogo no Google Drive." />
+  <meta name="drive-catalog-url" content="https://script.google.com/macros/s/AKfycbzoTK7E7r1MSILdGPQA2Qe5nMKH0xPJj23kGmjjR3i6-4RB792ppfdoDmCXZKpYg464KQ/exec" />
+  <meta name="drive-folder-url" content="https://drive.google.com/drive/folders/1QPJn-eJP5-Sh8jvajASOQuNzWkamwjaW" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230d9488'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Inter,system-ui,sans-serif' font-size='32' font-weight='800' fill='white'%3ES%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -18,16 +17,24 @@
   <!-- Navbar -->
   <header class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="#home" class="logo" data-page="home">
-        <img src="https://lh3.googleusercontent.com/a-/AOh14Gj" alt="Prof. Serufo" class="logo-img" onerror="this.style.display='none'" />
-        <span>Prof. Serufo</span>
-      </a>
+      <div class="nav-brand">
+        <a href="#home" class="logo" data-page="home">
+          <span class="logo-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </span>
+          <span>Prof. Serufo</span>
+        </a>
+        <a href="../" class="nav-portfolio-link" title="Voltar ao portfólio principal">← Portfólio</a>
+      </div>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="#home" class="nav-link active" data-page="home">Página inicial</a>
-        
+      <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
+        <a href="#home" class="nav-link active" data-page="home">Início</a>
+
         <div class="dropdown">
-          <button class="nav-link dropdown-btn">Algoritmos e Estruturas de Dados <span class="chevron">▾</span></button>
+          <button type="button" class="nav-link dropdown-btn" aria-haspopup="true" aria-expanded="false">Algoritmos e Estruturas de Dados <span class="chevron" aria-hidden="true">▾</span></button>
           <div class="dropdown-content">
             <a href="#algoritmos" data-page="algoritmos">Visão Geral</a>
             <a href="#algoritmos-material" data-page="algoritmos-material">Material</a>
@@ -35,7 +42,7 @@
         </div>
 
         <div class="dropdown">
-          <button class="nav-link dropdown-btn">Sistemas Operacionais <span class="chevron">▾</span></button>
+          <button type="button" class="nav-link dropdown-btn" aria-haspopup="true" aria-expanded="false">Sistemas Operacionais <span class="chevron" aria-hidden="true">▾</span></button>
           <div class="dropdown-content">
             <a href="#so" data-page="so">Visão Geral</a>
             <a href="#so-programa" data-page="so-programa">Programa</a>
@@ -44,7 +51,7 @@
         </div>
 
         <div class="dropdown">
-          <button class="nav-link dropdown-btn">Desenvolvimento de Jogos <span class="chevron">▾</span></button>
+          <button type="button" class="nav-link dropdown-btn" aria-haspopup="true" aria-expanded="false">Desenvolvimento de Jogos <span class="chevron" aria-hidden="true">▾</span></button>
           <div class="dropdown-content">
             <a href="#jogos" data-page="jogos">Visão Geral</a>
             <a href="#jogos-programa" data-page="jogos-programa">Programa</a>
@@ -54,7 +61,7 @@
         </div>
 
         <div class="dropdown">
-          <button class="nav-link dropdown-btn">Introdução Programação de Jogos e Dispositivos Móveis <span class="chevron">▾</span></button>
+          <button type="button" class="nav-link dropdown-btn" aria-haspopup="true" aria-expanded="false">Intro. Jogos e Mobile <span class="chevron" aria-hidden="true">▾</span></button>
           <div class="dropdown-content">
             <a href="#intro-jogos" data-page="intro-jogos">Visão Geral</a>
             <a href="#intro-jogos-programa" data-page="intro-jogos-programa">Programa</a>
@@ -63,7 +70,7 @@
         </div>
 
         <div class="dropdown">
-          <button class="nav-link dropdown-btn">Programação de Dispositivos Móveis <span class="chevron">▾</span></button>
+          <button type="button" class="nav-link dropdown-btn" aria-haspopup="true" aria-expanded="false">Dispositivos Móveis <span class="chevron" aria-hidden="true">▾</span></button>
           <div class="dropdown-content">
             <a href="#mobile" data-page="mobile">Visão Geral</a>
             <a href="#mobile-material" data-page="mobile-material">Material</a>
@@ -73,7 +80,7 @@
         <a href="#outros" class="nav-link" data-page="outros">Outros Materiais</a>
       </nav>
 
-      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+      <button type="button" class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -96,18 +103,18 @@
       <div class="container section">
         <div class="intro-grid">
           <div class="intro-card">
-            <div class="card-icon">📚</div>
+            <div class="card-icon" aria-hidden="true">📚</div>
             <h3>Disciplinas</h3>
             <p>Materiais e programas das disciplinas de computação.</p>
           </div>
           <div class="intro-card">
-            <div class="card-icon">💻</div>
-            <h3>Algoritmos & SO</h3>
+            <div class="card-icon" aria-hidden="true">💻</div>
+            <h3>Algoritmos &amp; SO</h3>
             <p>Fundamentos de estruturas de dados e sistemas operacionais.</p>
           </div>
           <div class="intro-card">
-            <div class="card-icon">🎮</div>
-            <h3>Jogos & Mobile</h3>
+            <div class="card-icon" aria-hidden="true">🎮</div>
+            <h3>Jogos &amp; Mobile</h3>
             <p>Desenvolvimento de jogos e programação para dispositivos móveis.</p>
           </div>
         </div>
@@ -153,7 +160,7 @@
             <a href="#outros" class="course-card" data-page="outros">
               <div class="course-card-bg outros"></div>
               <div class="course-card-content">
-                <h3>Outros — PDFs e Materiais</h3>
+                <h3>Outros — Catálogo de Materiais</h3>
                 <span class="course-link">Ver catálogo →</span>
               </div>
             </a>
@@ -195,7 +202,7 @@
         <div class="material-card">
           <div class="slides-embed">
             <div class="slides-placeholder">
-              <div class="slides-icon">📊</div>
+              <div class="slides-icon" aria-hidden="true">📊</div>
               <h3>Algoritmos e Estrutura de Dados</h3>
               <p>Prof. Serufo</p>
               <a href="https://sites.google.com/view/serufo/algoritmos-e-estrutras-de-dados/material" target="_blank" rel="noopener" class="btn btn-primary">
@@ -262,7 +269,7 @@
         <div class="material-card">
           <div class="slides-embed">
             <div class="slides-placeholder">
-              <div class="slides-icon">💻</div>
+              <div class="slides-icon" aria-hidden="true">💻</div>
               <h3>SISTEMAS OPERACIONAIS</h3>
               <p>Prof. Serufo</p>
               <a href="https://sites.google.com/view/serufo/sistemas-operacionais/material" target="_blank" rel="noopener" class="btn btn-primary">
@@ -330,7 +337,7 @@
         <div class="material-card">
           <div class="slides-embed">
             <div class="slides-placeholder">
-              <div class="slides-icon">🎮</div>
+              <div class="slides-icon" aria-hidden="true">🎮</div>
               <h3>DESENVOLVIMENTO DE JOGOS</h3>
               <p>Prof. Serufo</p>
               <a href="https://sites.google.com/view/serufo/desenvolvimento-de-jogos/material" target="_blank" rel="noopener" class="btn btn-primary">
@@ -416,7 +423,7 @@
         <div class="material-card">
           <div class="slides-embed">
             <div class="slides-placeholder">
-              <div class="slides-icon">📱</div>
+              <div class="slides-icon" aria-hidden="true">📱</div>
               <h3>Introdução à Programação de Jogos e Dispositivos Móveis</h3>
               <p>Prof. Serufo</p>
               <a href="https://sites.google.com/view/serufo/introdu%C3%A7%C3%A3o-programa%C3%A7%C3%A3o-de-jogos-e-dispositivos-m%C3%B3veis/material" target="_blank" rel="noopener" class="btn btn-primary">
@@ -462,7 +469,7 @@
         <div class="material-card">
           <div class="slides-embed">
             <div class="slides-placeholder">
-              <div class="slides-icon">📲</div>
+              <div class="slides-icon" aria-hidden="true">📲</div>
               <h3>Programação de Dispositivos Móveis</h3>
               <p>Prof. Serufo</p>
               <a href="https://sites.google.com/view/serufo/programa%C3%A7%C3%A3o-de-dispositivos-m%C3%B3veis/material" target="_blank" rel="noopener" class="btn btn-primary">
@@ -475,22 +482,22 @@
       </div>
     </section>
 
-    <!-- OUTROS - Catálogo de PDFs por pastas -->
+    <!-- OUTROS - Catálogo sincronizado com o Google Drive -->
     <section id="outros" class="page">
       <div class="hero hero-outros">
         <div class="hero-overlay"></div>
         <div class="hero-content">
           <h1 class="hero-title">OUTROS MATERIAIS</h1>
           <div class="hero-line"></div>
-          <p class="hero-subtitle">Arquivos e materiais complementares</p>
+          <p class="hero-subtitle">Arquivos e materiais complementares via Google Drive</p>
         </div>
       </div>
 
       <div class="container section">
         <div class="pdf-toolbar">
           <div class="search-box">
-            <input type="text" id="pdfSearch" placeholder="Buscar por nome do arquivo..." autocomplete="off" />
-            <span class="search-icon">🔍</span>
+            <input type="search" id="pdfSearch" placeholder="Buscar por nome, pasta ou tipo (ex.: PDF, Slides)..." autocomplete="off" aria-label="Buscar materiais" />
+            <span class="search-icon" aria-hidden="true">🔍</span>
           </div>
           <div class="filter-group">
             <label for="pdfFilter">Pasta:</label>
@@ -498,26 +505,27 @@
               <option value="todos">Todas as pastas</option>
             </select>
           </div>
-          <button type="button" class="btn btn-secondary" id="btnSelectFolder" title="Usar se a listagem automática não funcionar">
-            Selecionar pasta pdfs
-          </button>
-          <button type="button" class="btn btn-primary" id="btnRefreshPdfs" title="Varrer pasta novamente">
+          <a href="https://drive.google.com/drive/folders/1QPJn-eJP5-Sh8jvajASOQuNzWkamwjaW" target="_blank" rel="noopener" class="btn btn-secondary" id="btnOpenDrive">
+            Abrir no Drive
+          </a>
+          <button type="button" class="btn btn-primary" id="btnRefreshPdfs" title="Atualizar lista do Google Drive">
             Atualizar
           </button>
         </div>
-        <div id="pdfStatus" class="pdf-status"></div>
 
+        <div id="pdfStatus" class="pdf-status" role="status" aria-live="polite"></div>
         <div class="pdf-count" id="pdfCount"></div>
 
         <!-- Árvore de pastas + arquivos -->
         <div id="pdfTree" class="pdf-tree"></div>
 
         <div class="pdf-empty" id="pdfEmpty" style="display:none;">
-          <div class="empty-icon">📁</div>
-          <h3>Nenhum arquivo encontrado</h3>
-          <p>Coloque PDFs nas pastas dentro de <code>pdfs/</code> e rode o script <code>gerar-catalogo.py</code>.</p>
-        </div>
-
+          <div class="empty-icon" aria-hidden="true">📁</div>
+          <h3 id="pdfEmptyTitle">Nenhum arquivo encontrado</h3>
+          <p id="pdfEmptyDesc">Tente limpar a busca ou abra diretamente a pasta compartilhada no Google Drive.</p>
+          <a href="https://drive.google.com/drive/folders/1QPJn-eJP5-Sh8jvajASOQuNzWkamwjaW" target="_blank" rel="noopener" class="btn btn-primary" style="margin-top: 1rem;">
+            Abrir pasta no Google Drive
+          </a>
         </div>
       </div>
     </section>
@@ -526,18 +534,13 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
-      <p>© <span id="year"></span> Prof. José Carlos Serufo Filho - serufo@ufmg.br</p>
-      <p class="footer-note">Site criado a partir do conteúdo original em Google Sites</p>
+      <p>© <span id="year"></span> Prof. José Carlos Serufo Filho · <a href="mailto:serufo@ufmg.br" class="footer-link">serufo@ufmg.br</a></p>
+      <p class="footer-note">
+        <a href="../" class="footer-link">Voltar ao portfólio principal</a>
+      </p>
     </div>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script>
-    if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    }
-  </script>
   <script src="app.js"></script>
 </body>
 </html>

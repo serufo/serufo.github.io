@@ -1,21 +1,27 @@
-Prof. Serufo — Site SPA (GitHub Pages)
+Prof. Serufo — Portal de Aulas (GitHub Pages + Google Drive)
 
-HOSPEDAGEM
-  Este site é feito para GitHub Pages (*.github.io).
+ADICIONAR OU ATUALIZAR MATERIAIS
+  1. Abra a pasta pública no Google Drive:
+     https://drive.google.com/drive/folders/1QPJn-eJP5-Sh8jvajASOQuNzWkamwjaW
+  2. Arraste PDFs, Slides, Docs, Planilhas, ZIPs ou outros arquivos para
+     dentro das subpastas (ex.: BIOINFORMATICA, Faculdade de Medicina - UFMG)
+     ou crie novas subpastas.
+  3. Os novos arquivos aparecem automaticamente na aba "Outros Materiais"
+     (cache de 5 min; use o botão "Atualizar" para ver na hora).
+  4. Não é necessário fazer commit ou push no GitHub ao trocar materiais.
 
-ADICIONAR PDFs
-  1. Coloque os PDFs em pdfs/ (com subpastas se quiser)
-  2. git add pdfs && git commit -m "PDFs" && git push
-  3. Espere o deploy e abra a aba Outros (ou clique em Atualizar)
-
-  A listagem é automática via API do GitHub.
-  O repositório precisa ser público.
-
-SE A LISTAGEM FALHAR
-  No index.html, descomente e preencha:
-    <meta name="github-owner" content="seu-usuario" />
-    <meta name="github-repo" content="nome-do-repo" />
+IMPLANTAR / ATUALIZAR O GOOGLE APPS SCRIPT (passo único)
+  1. Acesse https://script.google.com -> Novo projeto.
+  2. Cole o conteúdo de aulas/google-apps-script.gs.
+  3. Clique em Implantar -> Nova implantação -> App da Web:
+     - Executar como: Eu
+     - Quem pode acessar: Qualquer pessoa
+  4. Copie a URL gerada (https://script.google.com/macros/s/.../exec)
+     e coloque em aulas/index.html na meta tag:
+       <meta name="drive-catalog-url" content="SUA_URL_AQUI" />
 
 TESTE LOCAL
-  python -m http.server 8080
-  (listagem local por HTML do servidor; no GitHub Pages usa a API)
+  Na raiz do repositório:
+    python3 -m http.server 8080
+  Acesse:
+    http://localhost:8080/aulas/

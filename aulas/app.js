@@ -1,4 +1,4 @@
-// ===== SPA + listagem de PDFs (GitHub Pages / servidor local) + thumbs =====
+// ===== SPA + Catálogo Dinâmico do Google Drive (via Apps Script) =====
 
 const pages = document.querySelectorAll('.page');
 const navLinks = document.querySelectorAll('[data-page]');
@@ -8,11 +8,31 @@ const yearEl = document.getElementById('year');
 
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-/** @type {{ path: string, name: string, pasta: string, subpasta: string, url: string }[]} */
-let pdfFiles = [];
-const thumbCache = new Map();
+const SESSION_CACHE_KEY = 'serufo_drive_catalog_v1';
+const SESSION_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
 
-function showPage(pageId) {
+/** @type {Array<{id:string, name:string, pasta:string, subpasta:string, path:string, mimeType:string, size:number, updatedAt?:string, viewUrl:string, downloadUrl?:string, thumbUrl?:string}>} */
+let catalogFiles = [];
+let catalogLoaded = false;
+let loadSequence = 0;
+
+// ---------- Navegação SPA ----------
+function closeAllDropdowns() {
+  document.querySelectorAll('.dropdown').forEach(d => {
+    d.classList.remove('open');
+    d.querySelector('.dropdown-btn')?.setAttribute('aria-expanded', 'false');
+  });
+}
+
+function closeMobileMenu() {
+  navLinksContainer?.classList.remove('open');
+  menuToggle?.classList.remove('active');
+  menuToggle?.setAttribute('aria-expanded', 'false');
+}
+
+function showPage(rawPageId) {
+  const pageId = rawPageId && document.getElementById(rawPageId) ? rawPageId : 'home';
+
   pages.forEach(p => p.classList.remove('active'));
   const target = document.getElementById(pageId);
   if (target) {
@@ -27,24 +47,33 @@ function showPage(pageId) {
     }
   });
 
-  navLinksContainer?.classList.remove('open');
-  menuToggle?.classList.remove('active');
-  document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+  // Destaca o botão dropdown pai quando uma subpágina está ativa
+  document.querySelectorAll('.dropdown').forEach(dropdown => {
+    const hasActiveChild = dropdown.querySelector(`.dropdown-content a[data-page="${pageId}"]`);
+    if (hasActiveChild) {
+      dropdown.querySelector('.dropdown-btn')?.classList.add('active');
+    }
+  });
 
-  if (pageId === 'outros') scanPdfs();
+  closeMobileMenu();
+  closeAllDropdowns();
+
+  if (pageId === 'outros' && !catalogLoaded) {
+    loadDriveCatalog(false);
+  }
 }
 
 function handleRoute() {
-  showPage(window.location.hash.slice(1) || 'home');
+  const hash = decodeURIComponent(window.location.hash.slice(1));
+  showPage(hash || 'home');
 }
 
 window.addEventListener('hashchange', handleRoute);
 window.addEventListener('DOMContentLoaded', () => {
   handleRoute();
-  document.getElementById('pdfSearch')?.addEventListener('input', renderPdfTree);
-  document.getElementById('pdfFilter')?.addEventListener('change', renderPdfTree);
-  document.getElementById('btnRefreshPdfs')?.addEventListener('click', () => scanPdfs(true));
-  document.getElementById('btnSelectFolder')?.addEventListener('click', pickFolderManually);
+  document.getElementById('pdfSearch')?.addEventListener('input', renderCatalog);
+  document.getElementById('pdfFilter')?.addEventListener('change', renderCatalog);
+  document.getElementById('btnRefreshPdfs')?.addEventListener('click', () => loadDriveCatalog(true));
 });
 
 navLinks.forEach(link => {
@@ -52,408 +81,338 @@ navLinks.forEach(link => {
     const page = link.dataset.page;
     if (page) {
       e.preventDefault();
-      window.location.hash = page;
+      if (window.location.hash === `#${page}`) {
+        showPage(page);
+      } else {
+        window.location.hash = page;
+      }
     }
   });
 });
 
 menuToggle?.addEventListener('click', () => {
-  navLinksContainer.classList.toggle('open');
-  menuToggle.classList.toggle('active');
+  const isOpen = navLinksContainer.classList.toggle('open');
+  menuToggle.classList.toggle('active', isOpen);
+  menuToggle.setAttribute('aria-expanded', String(isOpen));
 });
 
 document.querySelectorAll('.dropdown-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
-    if (window.innerWidth <= 1100) {
-      e.preventDefault();
-      e.stopPropagation();
-      btn.closest('.dropdown').classList.toggle('open');
+    e.preventDefault();
+    e.stopPropagation();
+    const dropdown = btn.closest('.dropdown');
+    const wasOpen = dropdown.classList.contains('open');
+    closeAllDropdowns();
+    if (!wasOpen) {
+      dropdown.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
     }
   });
 });
 
 document.addEventListener('click', (e) => {
-  if (window.innerWidth <= 1100 &&
-      navLinksContainer?.classList.contains('open') &&
-      !navLinksContainer.contains(e.target) &&
-      !menuToggle.contains(e.target)) {
-    navLinksContainer.classList.remove('open');
-    menuToggle.classList.remove('active');
+  if (!e.target.closest('.dropdown')) {
+    closeAllDropdowns();
+  }
+  if (
+    window.innerWidth <= 1180 &&
+    navLinksContainer?.classList.contains('open') &&
+    !navLinksContainer.contains(e.target) &&
+    !menuToggle.contains(e.target)
+  ) {
+    closeMobileMenu();
   }
 });
 
-function setStatus(msg, isError) {
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeAllDropdowns();
+    closeMobileMenu();
+  }
+});
+
+// ---------- Configuração e Status ----------
+function getDriveConfig() {
+  const catalogUrl = document.querySelector('meta[name="drive-catalog-url"]')?.content?.trim() || '';
+  const folderUrl = document.querySelector('meta[name="drive-folder-url"]')?.content?.trim() || '';
+  return { catalogUrl, folderUrl };
+}
+
+function setStatus(msg, isError = false) {
   const el = document.getElementById('pdfStatus');
   if (!el) return;
   el.textContent = msg || '';
   el.classList.toggle('error', !!isError);
 }
 
-// ---------- Detecta GitHub Pages ----------
-function getGitHubRepoInfo() {
-  // Override explícito (meta tags ou window)
-  const metaOwner = document.querySelector('meta[name="github-owner"]')?.content?.trim();
-  const metaRepo = document.querySelector('meta[name="github-repo"]')?.content?.trim();
-  if (window.GITHUB_OWNER && window.GITHUB_REPO) {
-    return { owner: window.GITHUB_OWNER, repo: window.GITHUB_REPO, contentRoot: window.GITHUB_CONTENT_ROOT || '' };
-  }
-  if (metaOwner && metaRepo) {
-    const metaRoot = document.querySelector('meta[name="github-content-root"]')?.content?.trim() || '';
-    return { owner: metaOwner, repo: metaRepo, contentRoot: metaRoot };
-  }
-
-  const host = window.location.hostname;
-  if (!host.endsWith('github.io')) return null;
-
-  const owner = host.replace(/\.github\.io$/i, '');
-  const parts = window.location.pathname.split('/').filter(Boolean);
-  // Remove arquivo no final (index.html etc.)
-  if (parts.length && /\.(html?|htm)$/i.test(parts[parts.length - 1])) {
-    parts.pop();
-  }
-
-  // Site de usuário: owner.github.io  → repo = owner.github.io
-  // Project page clássico: owner.github.io/repo/ → repo = parts[0]
-  // Mas se o conteúdo está em subpasta do site de usuário (ex: /aulas/),
-  // o repo continua sendo owner.github.io e contentRoot = "aulas"
-  //
-  // Heurística: se existir repo GitHub com nome parts[0], seria project page.
-  // Como não podemos checar de forma síncrona, preferimos site de usuário
-  // quando meta não está definida: repo = owner.github.io, contentRoot = path.
-
-  const repo = owner + '.github.io';
-  const contentRoot = parts.join('/'); // ex: "aulas"
-
-  return { owner, repo, contentRoot };
-}
-
-/** URL pública do arquivo no site (github.io) */
-function pagesFileUrl(pathInRepo) {
-  // pathInRepo no repo: ex. aulas/pdfs/UFMG/arquivo.pdf
-  // No site: https://serufo.github.io/aulas/pdfs/UFMG/arquivo.pdf
-  const origin = window.location.origin;
-  const clean = pathInRepo.replace(/^\/+/, '');
-  return origin + '/' + clean;
-}
-
-function basePath() {
-  const path = window.location.pathname;
-  if (path.endsWith('.html')) {
-    return path.substring(0, path.lastIndexOf('/') + 1) || '/';
-  }
-  return path.endsWith('/') ? path : path.replace(/\/[^/]*$/, '/');
-}
-
-// ---------- GitHub API: lista conteúdo do repositório ----------
-async function scanViaGitHubAPI() {
-  const info = getGitHubRepoInfo();
-  if (!info) throw new Error('Não está no GitHub Pages');
-
-  const { owner, repo } = info;
-  setStatus(`Consultando repositório ${owner}/${repo}…`);
-
-  // Tree API recursiva (1 request) — precisa do SHA do branch default
-  const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
-    headers: { Accept: 'application/vnd.github+json' }
-  });
-  if (!repoRes.ok) {
-    throw new Error(
-      `Repo ${owner}/${repo} não encontrado (${repoRes.status}). ` +
-      `Crie o repositório público https://github.com/${owner}/${repo} ` +
-      `ou ajuste as meta tags github-owner / github-repo no index.html para o nome real do repositório.`
-    );
-  }
-  const repoData = await repoRes.json();
-  const branch = repoData.default_branch || 'main';
-
-  const treeRes = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
-    { headers: { Accept: 'application/vnd.github+json' } }
-  );
-  if (!treeRes.ok) throw new Error(`Falha ao listar arquivos (${treeRes.status})`);
-
-  const treeData = await treeRes.json();
-  const files = [];
-
-  // PDFs ficam em: [contentRoot/]pdfs/...
-  // Ex.: aulas/pdfs/UFMG/FM/arquivo.pdf
-  const root = (info.contentRoot || '').replace(/^\/+|\/+$/g, '');
-  const pdfPrefix = root ? root + '/pdfs/' : 'pdfs/';
-
-  for (const item of treeData.tree || []) {
-    if (item.type !== 'blob') continue;
-    if (!item.path.toLowerCase().startsWith(pdfPrefix.toLowerCase())) continue;
-    if (!/\.pdf$/i.test(item.path)) continue;
-
-    // rel dentro de pdfs/
-    const rel = item.path.slice(pdfPrefix.length);
-    const segments = rel.split('/').filter(Boolean);
-    const name = segments[segments.length - 1];
-    const pasta = segments.length > 1 ? segments[0] : 'raiz';
-    const subpasta = segments.length > 2 ? segments.slice(1, -1).join('/') : '';
-
-    files.push({
-      path: rel,
-      name,
-      pasta,
-      subpasta,
-      url: pagesFileUrl(item.path)
-    });
-  }
-
-  return files;
-}
-
-// ---------- Servidor local (python -m http.server) ----------
-async function fetchDirLinks(dirUrl) {
-  const res = await fetch(dirUrl, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const html = await res.text();
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  const base = dirUrl.endsWith('/') ? dirUrl : dirUrl + '/';
-  const links = [];
-
-  for (const a of doc.querySelectorAll('a')) {
-    let href = a.getAttribute('href');
-    if (!href) continue;
-    if (href === '../' || href === '..' || href.startsWith('?')) continue;
-    // ignore absolute paths that leave the dir
-    try { href = decodeURIComponent(href); } catch (_) {}
-    const name = href.replace(/\/$/, '');
-    if (!name || name === '.' || name.startsWith('.')) continue;
-    const isDir = href.endsWith('/');
-    links.push({ name, isDir, url: new URL(href, base).href });
-  }
-  return links;
-}
-
-async function scanDirRecursive(dirUrl, pastaRel = '') {
-  const found = [];
-  let entries;
+function readSessionCache(catalogUrl) {
   try {
-    entries = await fetchDirLinks(dirUrl);
-  } catch (e) {
-    return found;
+    const raw = sessionStorage.getItem(SESSION_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed.catalogUrl !== catalogUrl) return null;
+    if (Date.now() - parsed.savedAt > SESSION_CACHE_TTL_MS) return null;
+    if (!Array.isArray(parsed.files)) return null;
+    return parsed;
+  } catch (_) {
+    return null;
   }
-  for (const entry of entries) {
-    if (entry.isDir) {
-      const subPasta = pastaRel ? `${pastaRel}/${entry.name}` : entry.name;
-      found.push(...await scanDirRecursive(entry.url.endsWith('/') ? entry.url : entry.url + '/', subPasta));
-    } else if (/\.pdf$/i.test(entry.name)) {
-      const topFolder = pastaRel.split('/')[0] || 'raiz';
-      found.push({
-        path: pastaRel ? `${pastaRel}/${entry.name}` : entry.name,
-        name: entry.name,
-        pasta: topFolder,
-        subpasta: pastaRel.includes('/') ? pastaRel.split('/').slice(1).join('/') : '',
-        url: entry.url
-      });
-    }
-  }
-  return found;
 }
 
-async function scanViaLocalServer() {
-  const base = new URL('pdfs/', window.location.href).href;
-  return scanDirRecursive(base, '');
+function writeSessionCache(catalogUrl, data) {
+  try {
+    sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({
+      catalogUrl,
+      savedAt: Date.now(),
+      folderUrl: data.folderUrl || '',
+      generatedAt: data.generatedAt || '',
+      files: data.files || []
+    }));
+  } catch (_) {
+    // Ignora se o navegador restringir sessionStorage
+  }
 }
 
-// ---------- Orquestração ----------
-async function scanPdfs() {
-  setStatus('Procurando PDFs…');
+// ---------- Carregamento do Catálogo do Google Drive ----------
+async function loadDriveCatalog(forceRefresh = false) {
+  const seq = ++loadSequence;
+  const { catalogUrl, folderUrl } = getDriveConfig();
   const tree = document.getElementById('pdfTree');
-  if (tree) tree.innerHTML = '<div class="pdf-loading">Carregando arquivos…</div>';
+  const empty = document.getElementById('pdfEmpty');
+  const emptyTitle = document.getElementById('pdfEmptyTitle');
+  const emptyDesc = document.getElementById('pdfEmptyDesc');
+
+  if (folderUrl) {
+    const btnOpenDrive = document.getElementById('btnOpenDrive');
+    if (btnOpenDrive) btnOpenDrive.href = folderUrl;
+  }
+
+  if (!catalogUrl) {
+    catalogFiles = [];
+    catalogLoaded = false;
+    updateFolderFilter([]);
+    if (tree) tree.innerHTML = '';
+    const countEl = document.getElementById('pdfCount');
+    if (countEl) countEl.textContent = '';
+    setStatus('Catálogo aguardando a URL do Google Apps Script (veja aulas/google-apps-script.gs).');
+    if (empty) empty.style.display = 'block';
+    if (emptyTitle) emptyTitle.textContent = 'Catálogo conectado ao Google Drive';
+    if (emptyDesc) {
+      emptyDesc.textContent = 'A pasta pública no Google Drive já está disponível. Assim que a URL do Web App do Apps Script for configurada, os arquivos aparecerão automaticamente aqui.';
+    }
+    return;
+  }
+
+  if (!forceRefresh) {
+    const cached = readSessionCache(catalogUrl);
+    if (cached) {
+      catalogFiles = cached.files;
+      catalogLoaded = true;
+      updateFolderFilter(catalogFiles);
+      setStatus(`${catalogFiles.length} arquivo(s) carregado(s) do Google Drive.`);
+      renderCatalog();
+      return;
+    }
+  }
+
+  setStatus('Consultando pasta no Google Drive…');
+  if (empty) empty.style.display = 'none';
+  if (tree) tree.innerHTML = '<div class="pdf-loading">Carregando materiais do Google Drive…</div>';
 
   try {
-    let files = [];
-    const gh = getGitHubRepoInfo();
+    const url = new URL(catalogUrl);
+    if (forceRefresh) url.searchParams.set('refresh', '1');
 
-    if (gh) {
-      files = await scanViaGitHubAPI();
-    } else {
-      files = await scanViaLocalServer();
+    const res = await fetch(url.toString(), { cache: 'no-store' });
+    if (!res.ok) throw new Error(`Falha ao consultar Google Drive (HTTP ${res.status})`);
+
+    const data = await res.json();
+    if (seq !== loadSequence) return; // Descarta resposta obsoleta
+
+    if (data.ok === false) {
+      throw new Error(data.error || 'O Apps Script retornou um erro ao ler a pasta do Drive.');
     }
 
-    pdfFiles = files;
+    const files = Array.isArray(data.files) ? data.files : [];
+    catalogFiles = files;
+    catalogLoaded = true;
+    writeSessionCache(catalogUrl, data);
     updateFolderFilter(files);
 
-    if (files.length === 0) {
-      setStatus('Nenhum PDF em pdfs/. Faça commit dos arquivos na pasta pdfs/ do repositório e aguarde o deploy.');
-    } else {
-      setStatus(`${files.length} PDF(s) encontrado(s). Gerando miniaturas…`);
+    if (data.folderUrl) {
+      const btnOpenDrive = document.getElementById('btnOpenDrive');
+      if (btnOpenDrive) btnOpenDrive.href = data.folderUrl;
     }
-    renderPdfTree();
-    generateThumbs(files);
+
+    if (files.length === 0) {
+      setStatus('A pasta do Google Drive está vazia no momento.');
+    } else {
+      setStatus(`${files.length} arquivo(s) sincronizado(s) com o Google Drive.`);
+    }
+    renderCatalog();
   } catch (err) {
+    if (seq !== loadSequence) return;
     console.error(err);
-    pdfFiles = [];
-    renderPdfTree();
+    catalogFiles = [];
+    catalogLoaded = false;
+    renderCatalog();
     setStatus(
-      (err && err.message) ||
-      'Falha ao listar PDFs. No GitHub Pages o repositório precisa ser público e os arquivos devem estar em pdfs/.',
+      (err && err.message) || 'Não foi possível carregar o catálogo do Google Drive. Use o botão "Abrir no Drive".',
       true
     );
   }
 }
 
+// ---------- Utilitários de Texto, Tipo e Tamanho ----------
+function normalizeText(str) {
+  return String(str || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+function getFileTypeInfo(mimeType = '', name = '') {
+  const mime = String(mimeType).toLowerCase();
+  const ext = (String(name).match(/\.([a-z0-9]+)$/i)?.[1] || '').toLowerCase();
+
+  if (mime === 'application/pdf' || ext === 'pdf') {
+    return { label: 'PDF', icon: '📄', cls: 'type-pdf' };
+  }
+  if (
+    mime === 'application/vnd.google-apps.presentation' ||
+    mime.includes('presentation') ||
+    ['ppt', 'pptx', 'odp', 'key'].includes(ext)
+  ) {
+    return { label: 'Slides', icon: '📊', cls: 'type-slides' };
+  }
+  if (
+    mime === 'application/vnd.google-apps.document' ||
+    mime.includes('wordprocessing') ||
+    mime === 'application/msword' ||
+    ['doc', 'docx', 'odt', 'rtf'].includes(ext)
+  ) {
+    return { label: 'Doc', icon: '📝', cls: 'type-doc' };
+  }
+  if (
+    mime === 'application/vnd.google-apps.spreadsheet' ||
+    mime.includes('spreadsheet') ||
+    mime === 'application/vnd.ms-excel' ||
+    ['xls', 'xlsx', 'ods', 'csv'].includes(ext)
+  ) {
+    return { label: 'Planilha', icon: '📈', cls: 'type-sheet' };
+  }
+  if (mime.startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'].includes(ext)) {
+    return { label: 'Imagem', icon: '🖼️', cls: 'type-image' };
+  }
+  if (mime.startsWith('video/') || ['mp4', 'webm', 'mov', 'mkv'].includes(ext)) {
+    return { label: 'Vídeo', icon: '🎬', cls: 'type-video' };
+  }
+  if (mime.startsWith('audio/') || ['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) {
+    return { label: 'Áudio', icon: '🎵', cls: 'type-audio' };
+  }
+  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext) || mime.includes('zip') || mime.includes('compressed')) {
+    return { label: 'Arquivo', icon: '🗜️', cls: 'type-archive' };
+  }
+  if (['py', 'js', 'ts', 'html', 'css', 'json', 'ipynb', 'tex', 'md', 'txt', 'sql', 'c', 'cpp', 'java'].includes(ext)) {
+    return { label: ext.toUpperCase(), icon: '💻', cls: 'type-code' };
+  }
+  if (mime === 'application/vnd.google-apps.form') {
+    return { label: 'Formulário', icon: '📋', cls: 'type-doc' };
+  }
+  return { label: ext ? ext.toUpperCase() : 'Arquivo', icon: '📎', cls: 'type-other' };
+}
+
+function formatBytes(bytes) {
+  const n = Number(bytes);
+  if (!n || n <= 0) return '';
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`;
+}
+
+function stripExtension(name) {
+  return String(name || '').replace(/\.[a-z0-9]{1,6}$/i, '');
+}
+
+// ---------- Filtros e Renderização ----------
 function updateFolderFilter(files) {
   const select = document.getElementById('pdfFilter');
   if (!select) return;
-  const pastas = [...new Set(files.map(f => f.pasta))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const pastas = [...new Set(files.map(f => f.pasta || 'Geral'))].sort((a, b) =>
+    a.localeCompare(b, 'pt-BR', { numeric: true, sensitivity: 'base' })
+  );
   const current = select.value;
   select.innerHTML = '<option value="todos">Todas as pastas</option>' +
     pastas.map(p => `<option value="${escapeAttr(p)}">${escapeHtml(p)}/</option>`).join('');
   if ([...select.options].some(o => o.value === current)) select.value = current;
 }
 
-// ---------- Fallback: File System Access (só local) ----------
-async function pickFolderManually() {
-  if (!window.showDirectoryPicker) {
-    setStatus('Seleção de pasta não disponível neste navegador. No GitHub Pages, coloque os PDFs em pdfs/ e faça push.', true);
-    return;
-  }
-  try {
-    const dirHandle = await window.showDirectoryPicker({ mode: 'read' });
-    setStatus('Lendo pasta…');
-    const files = await walkDirectoryHandle(dirHandle, '');
-    pdfFiles = files;
-    updateFolderFilter(files);
-    setStatus(`${files.length} PDF(s). Gerando miniaturas…`);
-    renderPdfTree();
-    generateThumbs(files);
-  } catch (e) {
-    if (e.name !== 'AbortError') setStatus('Falha: ' + e.message, true);
-  }
-}
-
-async function walkDirectoryHandle(dirHandle, pastaRel) {
-  const found = [];
-  for await (const entry of dirHandle.values()) {
-    if (entry.kind === 'directory') {
-      const sub = pastaRel ? `${pastaRel}/${entry.name}` : entry.name;
-      found.push(...await walkDirectoryHandle(entry, sub));
-    } else if (entry.kind === 'file' && /\.pdf$/i.test(entry.name)) {
-      const file = await entry.getFile();
-      const blobUrl = URL.createObjectURL(file);
-      found.push({
-        path: pastaRel ? `${pastaRel}/${entry.name}` : entry.name,
-        name: entry.name,
-        pasta: pastaRel.split('/')[0] || 'raiz',
-        subpasta: pastaRel.includes('/') ? pastaRel.split('/').slice(1).join('/') : '',
-        url: blobUrl
-      });
-    }
-  }
-  return found;
-}
-
-// ---------- Miniaturas PDF.js ----------
-async function generateThumbs(files) {
-  if (!window.pdfjsLib) {
-    setStatus(`${files.length} PDF(s). Miniaturas indisponíveis (PDF.js).`);
-    return;
-  }
-  let done = 0;
-  for (const f of files) {
-    if (thumbCache.has(f.path)) { done++; continue; }
-    try {
-      const dataUrl = await renderFirstPageThumb(f.url);
-      if (dataUrl) {
-        thumbCache.set(f.path, dataUrl);
-        const ph = document.querySelector(`[data-thumb-path="${cssAttr(f.path)}"]`);
-        if (ph) {
-          if (ph.tagName === 'IMG') {
-            ph.src = dataUrl;
-            ph.classList.add('loaded');
-          } else {
-            const img = document.createElement('img');
-            img.className = 'thumb loaded';
-            img.src = dataUrl;
-            img.alt = f.name;
-            img.dataset.thumbPath = f.path;
-            ph.replaceWith(img);
-          }
-        }
-      }
-    } catch (e) {
-      console.warn('Thumb falhou:', f.name, e);
-    }
-    done++;
-    if (done === files.length || done % 2 === 0) {
-      setStatus(`${files.length} PDF(s) · miniaturas ${done}/${files.length}`);
-    }
-  }
-  setStatus(`${files.length} PDF(s) · miniaturas prontas`);
-}
-
-async function renderFirstPageThumb(url) {
-  const pdf = await pdfjsLib.getDocument({ url, withCredentials: false }).promise;
-  const page = await pdf.getPage(1);
-  const desiredWidth = 180;
-  const v0 = page.getViewport({ scale: 1 });
-  const viewport = page.getViewport({ scale: desiredWidth / v0.width });
-  const canvas = document.createElement('canvas');
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
-  await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
-  try { pdf.destroy(); } catch (_) {}
-  return canvas.toDataURL('image/jpeg', 0.72);
-}
-
-function cssAttr(s) {
-  // escape for CSS attribute selector
-  return String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-}
-
-// ---------- UI ----------
-function renderPdfTree() {
+function renderCatalog() {
   const tree = document.getElementById('pdfTree');
   const empty = document.getElementById('pdfEmpty');
+  const emptyTitle = document.getElementById('pdfEmptyTitle');
+  const emptyDesc = document.getElementById('pdfEmptyDesc');
   const countEl = document.getElementById('pdfCount');
   const searchInput = document.getElementById('pdfSearch');
   const filterSelect = document.getElementById('pdfFilter');
   if (!tree) return;
 
-  const query = (searchInput?.value || '').trim().toLowerCase();
+  const query = normalizeText((searchInput?.value || '').trim());
   const filter = filterSelect?.value || 'todos';
 
-  let list = [...pdfFiles];
-  if (filter !== 'todos') list = list.filter(f => f.pasta === filter);
+  let list = [...catalogFiles];
+  if (filter !== 'todos') list = list.filter(f => (f.pasta || 'Geral') === filter);
   if (query) {
-    list = list.filter(f =>
-      f.name.toLowerCase().includes(query) || f.path.toLowerCase().includes(query)
-    );
+    list = list.filter(f => {
+      const typeInfo = getFileTypeInfo(f.mimeType, f.name);
+      const haystack = normalizeText(`${f.name} ${f.path} ${f.pasta} ${f.subpasta} ${typeInfo.label}`);
+      return haystack.includes(query);
+    });
   }
-  list.sort((a, b) => a.path.localeCompare(b.path, 'pt-BR', { sensitivity: 'base' }));
+
+  list.sort((a, b) =>
+    (a.path || a.name).localeCompare(b.path || b.name, 'pt-BR', { numeric: true, sensitivity: 'base' })
+  );
 
   if (countEl) {
-    countEl.textContent = list.length === 0 ? 'Nenhum arquivo' :
-      list.length === 1 ? '1 arquivo' : `${list.length} arquivos`;
+    countEl.textContent = list.length === 0
+      ? 'Nenhum arquivo'
+      : list.length === 1 ? '1 arquivo' : `${list.length} arquivos`;
   }
 
   if (list.length === 0) {
     tree.innerHTML = '';
     if (empty) empty.style.display = 'block';
+    if (emptyTitle) emptyTitle.textContent = 'Nenhum arquivo encontrado';
+    if (emptyDesc) {
+      emptyDesc.textContent = query || filter !== 'todos'
+        ? 'Nenhum material corresponde à busca ou pasta selecionada.'
+        : 'Adicione arquivos na pasta compartilhada do Google Drive e clique em Atualizar.';
+    }
     return;
   }
+
   if (empty) empty.style.display = 'none';
 
   const groups = {};
   for (const f of list) {
-    if (!groups[f.pasta]) groups[f.pasta] = [];
-    groups[f.pasta].push(f);
+    const pasta = f.pasta || 'Geral';
+    if (!groups[pasta]) groups[pasta] = [];
+    groups[pasta].push(f);
   }
 
   let html = '';
-  for (const pasta of Object.keys(groups).sort((a, b) => a.localeCompare(b, 'pt-BR'))) {
+  for (const pasta of Object.keys(groups).sort((a, b) =>
+    a.localeCompare(b, 'pt-BR', { numeric: true, sensitivity: 'base' })
+  )) {
     const files = groups[pasta];
     html += `
       <div class="folder-block">
         <div class="folder-header">
-          <span class="folder-icon">📁</span>
+          <span class="folder-icon" aria-hidden="true">📁</span>
           <div>
             <h3 class="folder-name">${escapeHtml(pasta)}</h3>
-            <span class="folder-path">pdfs/${escapeHtml(pasta)}/</span>
+            <span class="folder-path">Google Drive / ${escapeHtml(pasta)}/</span>
           </div>
           <span class="folder-count">${files.length}</span>
         </div>
@@ -462,32 +421,50 @@ function renderPdfTree() {
         </div>
       </div>`;
   }
+
   tree.innerHTML = html;
+
+  // Fallback limpo caso alguma miniatura do Drive não esteja disponível
+  tree.querySelectorAll('img.thumb').forEach(img => {
+    img.addEventListener('error', () => {
+      const wrap = img.closest('.thumb-wrap');
+      if (!wrap) return;
+      const icon = img.dataset.fallbackIcon || '📄';
+      const label = img.dataset.fallbackLabel || 'Arquivo';
+      wrap.innerHTML = `<div class="thumb-placeholder"><span>${escapeHtml(icon)}</span><small>${escapeHtml(label)}</small></div>`;
+    }, { once: true });
+  });
 }
 
 function fileCard(f) {
-  const thumb = thumbCache.get(f.path);
-  const label = f.name.replace(/\.pdf$/i, '');
+  const typeInfo = getFileTypeInfo(f.mimeType, f.name);
+  const label = stripExtension(f.name) || f.name;
+  const sizeStr = formatBytes(f.size);
   const sub = f.subpasta ? `<span class="file-subpath">${escapeHtml(f.subpasta)}/</span>` : '';
+  const viewUrl = f.viewUrl || `https://drive.google.com/file/d/${encodeURIComponent(f.id)}/view`;
+  const downloadUrl = f.downloadUrl || '';
 
   return `
     <article class="pdf-card-thumb">
       <div class="thumb-wrap">
-        ${thumb
-          ? `<img class="thumb loaded" src="${thumb}" alt="${escapeAttr(label)}" data-thumb-path="${escapeAttr(f.path)}" />`
-          : `<div class="thumb-placeholder" data-thumb-path="${escapeAttr(f.path)}">
-               <span>📄</span><small>carregando…</small>
-             </div>`
+        <span class="file-type-badge ${typeInfo.cls}">${escapeHtml(typeInfo.label)}</span>
+        ${f.thumbUrl
+          ? `<img class="thumb" src="${escapeAttr(f.thumbUrl)}" alt="Prévia de ${escapeAttr(label)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-fallback-icon="${escapeAttr(typeInfo.icon)}" data-fallback-label="${escapeAttr(typeInfo.label)}" />`
+          : `<div class="thumb-placeholder"><span>${escapeHtml(typeInfo.icon)}</span><small>${escapeHtml(typeInfo.label)}</small></div>`
         }
       </div>
       <div class="pdf-card-body">
         <h3 class="pdf-card-title" title="${escapeAttr(f.name)}">${escapeHtml(label)}</h3>
         <div class="pdf-card-meta">
           ${sub}<span class="file-name">${escapeHtml(f.name)}</span>
+          ${sizeStr ? `<span class="file-size">${escapeHtml(sizeStr)}</span>` : ''}
         </div>
         <div class="pdf-actions">
-          <a href="${escapeAttr(f.url)}" class="btn btn-primary btn-sm" target="_blank" rel="noopener" download="${escapeAttr(f.name)}">Baixar</a>
-          <a href="${escapeAttr(f.url)}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">Abrir</a>
+          <a href="${escapeAttr(viewUrl)}" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Abrir</a>
+          ${downloadUrl
+            ? `<a href="${escapeAttr(downloadUrl)}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">Baixar</a>`
+            : ''
+          }
         </div>
       </div>
     </article>`;
@@ -500,7 +477,7 @@ function escapeHtml(str) {
 }
 
 function escapeAttr(str) {
-  return String(str)
+  return String(str == null ? '' : str)
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')

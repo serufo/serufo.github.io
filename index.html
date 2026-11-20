@@ -6,7 +6,12 @@
     <meta name="description" content="José Carlos Serufo Filho - Professor, Pesquisador e Desenvolvedor com foco em Inteligência Artificial e Informática em Saúde">
     <meta name="author" content="José Carlos Serufo Filho">
     <meta name="keywords" content="Inteligência Artificial, Machine Learning, Informática em Saúde, Ciência de Dados, UFMG">
-    <title>José Carlos Serufo Filho | Professor & Desenvolvedor</title>
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://serufo.github.io/">
+    <meta property="og:title" content="José Carlos Serufo Filho | Professor & Desenvolvedor">
+    <meta property="og:description" content="Professor, Pesquisador e Desenvolvedor com foco em Inteligência Artificial e Informática em Saúde (UFMG).">
+    <title>José Carlos Serufo Filho | Professor &amp; Desenvolvedor</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Space Grotesk,Inter,sans-serif' font-size='32' font-weight='700' fill='white'%3ES%3C/text%3E%3C/svg%3E">
     
     <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -924,16 +929,58 @@
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
+        .form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .form-actions .btn {
+            flex: 1;
+            min-width: 190px;
+            justify-content: center;
+        }
+
+        .email-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .copy-email-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--secondary);
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 999px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .copy-email-inline:hover {
+            background: var(--secondary);
+            color: #ffffff;
+            border-color: var(--secondary);
+        }
+
         /* ========== FOOTER ========== */
         footer {
-            background: var(--primary-light);
-            color: var(--text-muted);
+            background: #0f172a;
+            color: #cbd5e1;
             padding: 50px 0 24px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid #1e293b;
         }
 
         [data-theme="dark"] footer {
             background: #0a0f1a;
+            border-top-color: #1e293b;
         }
 
         .footer-inner {
@@ -951,7 +998,7 @@
             font-family: 'Space Grotesk', sans-serif;
             font-size: 1.4rem;
             font-weight: 700;
-            color: var(--primary);
+            color: #f8fafc;
         }
 
         .footer-logo i {
@@ -969,18 +1016,19 @@
 
         .footer-links a {
             font-size: 0.9rem;
-            color: var(--text-muted);
+            color: #cbd5e1;
             transition: var(--transition);
         }
 
         .footer-links a:hover {
-            color: var(--secondary);
+            color: #60a5fa;
         }
 
         .copyright {
             font-size: 0.85rem;
+            color: #94a3b8;
             padding-top: 24px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid #1e293b;
             width: 100%;
             text-align: center;
         }
@@ -1085,12 +1133,13 @@
                 <span>Serufo</span>
             </a>
 
-            <nav id="nav">
+            <nav id="nav" aria-label="Navegação principal">
                 <ul>
                     <li><a href="#home" data-i18n="nav_home">Início</a></li>
                     <li><a href="#about" data-i18n="nav_about">Sobre</a></li>
                     <li><a href="#skills" data-i18n="nav_skills">Habilidades</a></li>
                     <li><a href="#experience" data-i18n="nav_experience">Experiência</a></li>
+                    <li><a href="#education" data-i18n="nav_education">Formação</a></li>
                     <li><a href="#projects" data-i18n="nav_projects">Projetos</a></li>
                     <li><a href="#publications" data-i18n="nav_publications">Publicações</a></li>
                     <li><a href="#aulas" data-i18n="nav_aulas">Aulas</a></li>
@@ -1099,12 +1148,12 @@
             </nav>
 
             <div class="header-actions">
-                <button class="lang-switch" id="langSwitch" title="Switch language">EN</button>
-                <button class="theme-toggle" id="themeToggle" title="Toggle theme">
-                    <i class="fas fa-moon"></i>
+                <button type="button" class="lang-switch" id="langSwitch" title="Alternar idioma" aria-label="Alternar idioma">EN</button>
+                <button type="button" class="theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema claro e escuro">
+                    <i class="fas fa-moon" aria-hidden="true"></i>
                 </button>
-                <button class="mobile-toggle" id="mobileToggle">
-                    <i class="fas fa-bars"></i>
+                <button type="button" class="mobile-toggle" id="mobileToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -1158,7 +1207,7 @@
             </div>
             <div class="about-grid">
                 <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="José Carlos Serufo Filho">
+                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Ilustração de tecnologia e informática aplicada à saúde">
                 </div>
                 <div class="about-text">
                     <h3 data-i18n="about_heading">Professor e Pesquisador em IA aplicada à Saúde</h3>
@@ -1210,8 +1259,8 @@
                         <span class="skill-tag">Machine Learning</span>
                         <span class="skill-tag">Deep Learning</span>
                         <span class="skill-tag">NLP</span>
-                        <span class="skill-tag">Visão Computacional</span>
-                        <span class="skill-tag">Redes Neurais</span>
+                        <span class="skill-tag" data-i18n="skill_cv">Visão Computacional</span>
+                        <span class="skill-tag" data-i18n="skill_nn">Redes Neurais</span>
                         <span class="skill-tag">TensorFlow</span>
                         <span class="skill-tag">PyTorch</span>
                         <span class="skill-tag">Scikit-learn</span>
@@ -1237,7 +1286,7 @@
                 <div class="skill-card data">
                     <h3><i class="fas fa-database"></i> <span data-i18n="skill_data">Dados & Análise</span></h3>
                     <div class="skill-tags">
-                        <span class="skill-tag">Análise de Dados</span>
+                        <span class="skill-tag" data-i18n="skill_da">Análise de Dados</span>
                         <span class="skill-tag">SQL</span>
                         <span class="skill-tag">Pandas</span>
                         <span class="skill-tag">NumPy</span>
@@ -1458,31 +1507,30 @@
             <div class="aulas-grid">
                 <div class="aula-card">
                     <div class="aula-icon">
-                        <i class="fas fa-presentation"></i>
+                        <i class="fas fa-person-chalkboard" aria-hidden="true"></i>
                     </div>
                     <h3 data-i18n="aula1_title">Apresentação Principal</h3>
                     <p data-i18n="aula1_desc">Material de aula disponível no Google Slides. Clique para acessar e navegar pelo conteúdo.</p>
                     <a href="https://docs.google.com/presentation/d/1KMbRroMaodx8yZXxzmvzq0lDean-ftfMzHFcvLkvJ-Q/edit?usp=sharing" 
                        target="_blank" rel="noopener" class="btn btn-primary">
-                        <i class="fas fa-external-link-alt"></i>
+                        <i class="fas fa-external-link-alt" aria-hidden="true"></i>
                         <span data-i18n="aula1_btn">Abrir Apresentação</span>
                     </a>
                 </div>
                 <div class="aula-card">
                     <div class="aula-icon">
-                        <i class="fas fa-laptop-code"></i>
+                        <i class="fas fa-laptop-code" aria-hidden="true"></i>
                     </div>
                     <h3 data-i18n="aula2_title">Disciplinas Ministradas</h3>
                     <p data-i18n="aula2_desc">Sistemas Operacionais · Desenvolvimento de Aplicativos Móveis e Jogos · Algoritmos e Estruturas de Dados</p>
-                    <a href="https://serufo.github.io/aulas" 
-                       target="_blank" rel="noopener" class="btn btn-primary">
-                        <i class="fas fa-external-link-alt"></i>
+                    <a href="./aulas/" class="btn btn-primary">
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         <span data-i18n="aula2_btn">Abrir Aulas</span>
                     </a>
                 </div>
                 <div class="aula-card">
                     <div class="aula-icon">
-                        <i class="fas fa-book-open"></i>
+                        <i class="fas fa-book-open" aria-hidden="true"></i>
                     </div>
                     <h3 data-i18n="aula3_title">Áreas de Ensino</h3>
                     <p data-i18n="aula3_desc">Ciência da Computação · Informática em Saúde · Análise de Dados · Inteligência Artificial aplicada</p>
@@ -1502,47 +1550,50 @@
             <div class="contact-grid">
                 <div class="contact-info">
                     <div class="contact-item">
-                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="contact-icon"><i class="fas fa-envelope" aria-hidden="true"></i></div>
                         <div class="contact-details">
                             <h4 data-i18n="contact_email">Email</h4>
-                            <a href="mailto:serufo.ufmg@gmail.com">serufo.ufmg@gmail.com</a>
+                            <div class="email-row">
+                                <a href="mailto:serufo@ufmg.br">serufo@ufmg.br</a>
+                                <button type="button" class="copy-email-inline" data-copy-email aria-label="Copiar e-mail serufo@ufmg.br">
+                                    <i class="far fa-copy" aria-hidden="true"></i>
+                                    <span data-i18n="copy_short">Copiar</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="contact-item">
-                        <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                        <div class="contact-icon"><i class="fas fa-phone" aria-hidden="true"></i></div>
                         <div class="contact-details">
                             <h4 data-i18n="contact_phone">Telefone</h4>
                             <p>(31) 99122-2703</p>
                         </div>
                     </div>
                     <div class="contact-item">
-                        <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="contact-icon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></div>
                         <div class="contact-details">
                             <h4 data-i18n="contact_address">Endereço</h4>
                             <p>Rua Domingos Vieira, 587 – Santa Efigênia<br>Belo Horizonte – MG</p>
                         </div>
                     </div>
                     <div class="social-links">
-                        <a href="http://lattes.cnpq.br/6493186083666611" target="_blank" rel="noopener" class="social-link" title="Lattes">
-                            <i class="fas fa-graduation-cap"></i>
+                        <a href="http://lattes.cnpq.br/6493186083666611" target="_blank" rel="noopener" class="social-link" title="Currículo Lattes" aria-label="Currículo Lattes">
+                            <i class="fas fa-graduation-cap" aria-hidden="true"></i>
                         </a>
-                        <a href="mailto:serufo.ufmg@gmail.com" class="social-link" title="Email">
-                            <i class="fas fa-envelope"></i>
+                        <a href="https://github.com/serufo" target="_blank" rel="noopener" class="social-link" title="GitHub" aria-label="GitHub">
+                            <i class="fab fa-github" aria-hidden="true"></i>
                         </a>
-                        <a href="https://orcid.org/0000-0002-5758-687X" target="_blank" rel="noopener" class="social-link" title="ORCID">
-                            <i class="fab fa-orcid"></i>
+                        <a href="https://orcid.org/0000-0002-5758-687X" target="_blank" rel="noopener" class="social-link" title="ORCID" aria-label="ORCID">
+                            <i class="fab fa-orcid" aria-hidden="true"></i>
+                        </a>
+                        <a href="mailto:serufo@ufmg.br" class="social-link" title="Email" aria-label="Enviar e-mail para serufo@ufmg.br">
+                            <i class="fas fa-envelope" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
 
                 <div class="contact-form">
-                    <!-- 
-                        Formulário funcional via Formspree.
-                        Para ativar: 1) Crie conta em https://formspree.io
-                        2) Crie um formulário e substitua o action abaixo pelo seu endpoint.
-                        Exemplo: action="https://formspree.io/f/xpzgkqyz"
-                    -->
-                    <form id="contactForm" action="https://formspree.io/f/xpzgkqyz" method="POST">
+                    <form id="contactForm">
                         <div class="form-group">
                             <label for="name" data-i18n="form_name">Seu Nome</label>
                             <input type="text" id="name" name="name" class="form-control" required placeholder="Nome completo">
@@ -1559,12 +1610,17 @@
                             <label for="message" data-i18n="form_message">Mensagem</label>
                             <textarea id="message" name="message" class="form-control" required placeholder="Escreva sua mensagem aqui..."></textarea>
                         </div>
-                        <input type="hidden" name="_subject" value="Nova mensagem do portfólio - Serufo">
-                        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
-                            <i class="fas fa-paper-plane"></i>
-                            <span data-i18n="form_submit">Enviar Mensagem</span>
-                        </button>
-                        <div id="formStatus" class="form-status"></div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                                <span data-i18n="form_submit">Enviar por Email</span>
+                            </button>
+                            <button type="button" class="btn btn-outline" data-copy-email>
+                                <i class="far fa-copy" aria-hidden="true"></i>
+                                <span data-i18n="copy_email">Copiar serufo@ufmg.br</span>
+                            </button>
+                        </div>
+                        <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
                     </form>
                 </div>
             </div>
@@ -1575,7 +1631,7 @@
     <footer>
         <div class="container footer-inner">
             <div class="footer-logo">
-                <i class="fas fa-brain"></i>
+                <i class="fas fa-brain" aria-hidden="true"></i>
                 <span>Serufo</span>
             </div>
             <div class="footer-links">
@@ -1583,25 +1639,30 @@
                 <a href="#about" data-i18n="nav_about">Sobre</a>
                 <a href="#skills" data-i18n="nav_skills">Habilidades</a>
                 <a href="#experience" data-i18n="nav_experience">Experiência</a>
+                <a href="#education" data-i18n="nav_education">Formação</a>
                 <a href="#projects" data-i18n="nav_projects">Projetos</a>
                 <a href="#publications" data-i18n="nav_publications">Publicações</a>
                 <a href="#aulas" data-i18n="nav_aulas">Aulas</a>
                 <a href="#contact" data-i18n="nav_contact">Contato</a>
             </div>
             <div class="copyright">
-                <p>&copy; 2026 José Carlos Serufo Filho. <span data-i18n="footer_rights">Todos os direitos reservados.</span></p>
+                <p>&copy; <span id="copyrightYear">2026</span> José Carlos Serufo Filho · <a href="mailto:serufo@ufmg.br" style="color: #93c5fd;">serufo@ufmg.br</a>. <span data-i18n="footer_rights">Todos os direitos reservados.</span></p>
             </div>
         </div>
     </footer>
 
     <script>
+        const CONTACT_EMAIL = 'serufo@ufmg.br';
+
         // ========== TRANSLATIONS ==========
         const translations = {
             pt: {
+                page_title: "José Carlos Serufo Filho | Professor & Desenvolvedor",
                 nav_home: "Início",
                 nav_about: "Sobre",
                 nav_skills: "Habilidades",
                 nav_experience: "Experiência",
+                nav_education: "Formação",
                 nav_projects: "Projetos",
                 nav_publications: "Publicações",
                 nav_aulas: "Aulas",
@@ -1635,6 +1696,9 @@
                 skill_ai: "Inteligência Artificial",
                 skill_dev: "Desenvolvimento",
                 skill_data: "Dados & Análise",
+                skill_cv: "Visão Computacional",
+                skill_nn: "Redes Neurais",
+                skill_da: "Análise de Dados",
                 exp_badge: "Experiência",
                 exp_title: "Experiência Profissional",
                 exp_desc: "Trajetória construída na interseção entre tecnologia, saúde e gestão.",
@@ -1689,18 +1753,22 @@
                 contact_email: "Email",
                 contact_phone: "Telefone",
                 contact_address: "Endereço",
+                copy_short: "Copiar",
+                copy_email: "Copiar serufo@ufmg.br",
                 form_name: "Seu Nome",
                 form_email: "Seu Email",
                 form_subject: "Assunto",
                 form_message: "Mensagem",
-                form_submit: "Enviar Mensagem",
+                form_submit: "Enviar por Email",
                 footer_rights: "Todos os direitos reservados."
             },
             en: {
+                page_title: "José Carlos Serufo Filho | Professor & Developer",
                 nav_home: "Home",
                 nav_about: "About",
                 nav_skills: "Skills",
                 nav_experience: "Experience",
+                nav_education: "Education",
                 nav_projects: "Projects",
                 nav_publications: "Publications",
                 nav_aulas: "Classes",
@@ -1734,6 +1802,9 @@
                 skill_ai: "Artificial Intelligence",
                 skill_dev: "Development",
                 skill_data: "Data & Analytics",
+                skill_cv: "Computer Vision",
+                skill_nn: "Neural Networks",
+                skill_da: "Data Analysis",
                 exp_badge: "Experience",
                 exp_title: "Professional Experience",
                 exp_desc: "A career built at the intersection of technology, health and management.",
@@ -1788,20 +1859,27 @@
                 contact_email: "Email",
                 contact_phone: "Phone",
                 contact_address: "Address",
+                copy_short: "Copy",
+                copy_email: "Copy serufo@ufmg.br",
                 form_name: "Your Name",
                 form_email: "Your Email",
                 form_subject: "Subject",
                 form_message: "Message",
-                form_submit: "Send Message",
+                form_submit: "Send via Email",
                 footer_rights: "All rights reserved."
             }
         };
 
-        let currentLang = 'pt';
+        const copyrightYearEl = document.getElementById('copyrightYear');
+        if (copyrightYearEl) copyrightYearEl.textContent = new Date().getFullYear();
+
+        let currentLang = localStorage.getItem('lang') === 'en' ? 'en' : 'pt';
 
         function setLanguage(lang) {
             currentLang = lang;
+            localStorage.setItem('lang', lang);
             document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+            document.title = translations[lang].page_title;
             document.getElementById('langSwitch').textContent = lang === 'pt' ? 'EN' : 'PT';
 
             document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1832,6 +1910,8 @@
             document.getElementById('message').placeholder = placeholders[lang].message;
         }
 
+        setLanguage(currentLang);
+
         document.getElementById('langSwitch').addEventListener('click', () => {
             setLanguage(currentLang === 'pt' ? 'en' : 'pt');
         });
@@ -1841,7 +1921,7 @@
         const savedTheme = localStorage.getItem('theme') || 'light';
         if (savedTheme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            themeToggle.innerHTML = '<i class="fas fa-sun" aria-hidden="true"></i>';
         }
 
         themeToggle.addEventListener('click', () => {
@@ -1849,11 +1929,11 @@
             if (isDark) {
                 document.documentElement.removeAttribute('data-theme');
                 localStorage.setItem('theme', 'light');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                themeToggle.innerHTML = '<i class="fas fa-moon" aria-hidden="true"></i>';
             } else {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 localStorage.setItem('theme', 'dark');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                themeToggle.innerHTML = '<i class="fas fa-sun" aria-hidden="true"></i>';
             }
         });
 
@@ -1862,16 +1942,18 @@
         const nav = document.getElementById('nav');
 
         mobileToggle.addEventListener('click', () => {
-            nav.classList.toggle('active');
+            const isOpen = nav.classList.toggle('active');
+            mobileToggle.setAttribute('aria-expanded', String(isOpen));
             const icon = mobileToggle.querySelector('i');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
+            icon.classList.toggle('fa-bars', !isOpen);
+            icon.classList.toggle('fa-times', isOpen);
         });
 
         // Close mobile menu on link click
         document.querySelectorAll('nav a').forEach(link => {
             link.addEventListener('click', () => {
                 nav.classList.remove('active');
+                mobileToggle.setAttribute('aria-expanded', 'false');
                 mobileToggle.querySelector('i').classList.add('fa-bars');
                 mobileToggle.querySelector('i').classList.remove('fa-times');
             });
@@ -1898,42 +1980,85 @@
             });
         });
 
-        // ========== FORM SUBMISSION ==========
+        // ========== COPY EMAIL ==========
+        async function copyContactEmail(triggerBtn) {
+            let copied = false;
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(CONTACT_EMAIL);
+                    copied = true;
+                }
+            } catch (_) {}
+
+            if (!copied) {
+                const tmp = document.createElement('textarea');
+                tmp.value = CONTACT_EMAIL;
+                tmp.setAttribute('readonly', '');
+                tmp.style.position = 'fixed';
+                tmp.style.opacity = '0';
+                document.body.appendChild(tmp);
+                tmp.select();
+                try { copied = document.execCommand('copy'); } catch (_) {}
+                document.body.removeChild(tmp);
+            }
+
+            const formStatus = document.getElementById('formStatus');
+            if (formStatus) {
+                formStatus.className = 'form-status ' + (copied ? 'success' : 'error');
+                formStatus.textContent = copied
+                    ? (currentLang === 'pt'
+                        ? `Email ${CONTACT_EMAIL} copiado para a área de transferência!`
+                        : `Email ${CONTACT_EMAIL} copied to clipboard!`)
+                    : (currentLang === 'pt'
+                        ? `Não foi possível copiar automaticamente. Use: ${CONTACT_EMAIL}`
+                        : `Could not copy automatically. Please use: ${CONTACT_EMAIL}`);
+            }
+
+            if (copied && triggerBtn) {
+                const span = triggerBtn.querySelector('span');
+                const icon = triggerBtn.querySelector('i');
+                if (span) {
+                    const origKey = span.getAttribute('data-i18n');
+                    span.textContent = currentLang === 'pt' ? 'Copiado!' : 'Copied!';
+                    if (icon) icon.className = 'fas fa-check';
+                    setTimeout(() => {
+                        if (origKey && translations[currentLang][origKey]) {
+                            span.textContent = translations[currentLang][origKey];
+                        }
+                        if (icon) icon.className = 'far fa-copy';
+                    }, 2200);
+                }
+            }
+        }
+
+        document.querySelectorAll('[data-copy-email]').forEach(btn => {
+            btn.addEventListener('click', () => copyContactEmail(btn));
+        });
+
+        // ========== FORM SUBMISSION (MAILTO) ==========
         const form = document.getElementById('contactForm');
         const formStatus = document.getElementById('formStatus');
 
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
-            const btn = form.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (currentLang === 'pt' ? 'Enviando...' : 'Sending...');
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
 
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: new FormData(form),
-                    headers: { 'Accept': 'application/json' }
-                });
+            const bodyLines = currentLang === 'pt'
+                ? [`Olá Prof. Serufo,`, '', message, '', '---', `Nome: ${name}`, `Email: ${email}`]
+                : [`Hello Prof. Serufo,`, '', message, '', '---', `Name: ${name}`, `Email: ${email}`];
 
-                if (response.ok) {
-                    formStatus.className = 'form-status success';
-                    formStatus.textContent = currentLang === 'pt' 
-                        ? 'Mensagem enviada com sucesso! Entrarei em contato em breve.' 
-                        : 'Message sent successfully! I will get back to you soon.';
-                    form.reset();
-                } else {
-                    throw new Error('Form submission failed');
-                }
-            } catch (error) {
-                formStatus.className = 'form-status error';
-                formStatus.textContent = currentLang === 'pt'
-                    ? 'Erro ao enviar. Por favor, envie um email diretamente para serufo.ufmg@gmail.com'
-                    : 'Error sending. Please email directly to serufo.ufmg@gmail.com';
-            }
+            const mailtoUrl =
+                `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`;
 
-            btn.disabled = false;
-            btn.innerHTML = originalText;
+            window.location.href = mailtoUrl;
+
+            formStatus.className = 'form-status success';
+            formStatus.textContent = currentLang === 'pt'
+                ? `Seu aplicativo de e-mail foi aberto com a mensagem pronta para ${CONTACT_EMAIL}. Caso não tenha aberto, use o botão "Copiar ${CONTACT_EMAIL}".`
+                : `Your email client has been opened with a draft to ${CONTACT_EMAIL}. If it did not open, use the "Copy ${CONTACT_EMAIL}" button.`;
         });
 
         // ========== ACTIVE NAV HIGHLIGHT ==========
